@@ -48,9 +48,16 @@ func (t *Token) GetDecimal() uint8 {
 	return t.Decimal
 }
 
-func (t *Token) Transfer(to, from string, amount uint64) {
-	t.Balance[from] = t.Balance[from] - amount
-	t.Balance[to] = t.Balance[to] + amount
+func (t *Token) Transfer(from, to string, amount uint64) {
+	t.transfer(from, to, amount)
+
+}
+func (t *Token) transfer(from, to string, amount uint64) {
+	fromBalance := t.Balance[from]
+
+	t.Balance[from] = fromBalance - amount
+	toBalance := t.Balance[to]
+	t.Balance[to] = toBalance + amount
 }
 
 //transferFrom 생성해야함.
@@ -72,8 +79,8 @@ func (t *Token) approve(owner, spender string, amount uint64) {
 	t.Allowances[key] = amount
 }
 
-func (t *Token) Mint(to string, amount uint64) {
-	t.mint(to, amount)
+func (t *Token) Mint(account string, amount uint64) {
+	t.mint(account, amount)
 }
 
 func (t *Token) mint(address string, amount uint64) {

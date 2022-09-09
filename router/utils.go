@@ -8,20 +8,20 @@ import (
 )
 
 // rest body json -> data:struct bind
-func BindJson(c *gin.Context, data interface{}) {
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		c.String(400, err.Error())
-	}
-}
 
 // tokenName -> db -> token
 func GetToken(c *gin.Context, token string) *grc20.Token {
 	value, ok := db.Get(token)
 	if !ok {
-		c.String(400, "Not Address")
-	}
+		c.String(400, "Don't exsits")
 
+	}
 	t := utils.ByteToToken(value)
+
 	return t
+}
+
+// save data
+func SaveToken(name string, token *grc20.Token) {
+	db.Add(name, utils.StructToByte(token))
 }

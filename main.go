@@ -14,9 +14,10 @@ func main() {
 	r.GET("/", router.Document)
 	r.GET("/balance", router.BalanceOf)
 	r.GET("/allowance", router.Allowance)
-	r.GET("/token", router.TokenInfo)
+	r.GET("/token/:name", router.TokenInfo)
 	//POST
 	r.POST("/deploy", router.Deploy)
+	r.POST("/mint", router.Mint)
 	r.POST("/transfer", router.Transfer)
 	r.POST("/approve", router.Approve)
 	r.Run()

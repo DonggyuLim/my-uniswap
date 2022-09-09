@@ -1,9 +1,10 @@
 package router
 
 import (
+	"fmt"
+
 	"github.com/DonggyuLim/erc20/db"
 	"github.com/DonggyuLim/erc20/grc20"
-	"github.com/DonggyuLim/erc20/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,19 +19,53 @@ type deployRequest struct {
 // 배포
 func Deploy(c *gin.Context) {
 	r := deployRequest{}
-	BindJson(c, r)
+	err := c.ShouldBindJSON(&r)
+	fmt.Println("r==========", r)
+	if err != nil {
+		c.String(400, err.Error())
+	}
+	_, ok := db.Get(r.TokenName)
+	fmt.Println(ok)
+	if ok {
+		c.String(400, "Exists Token")
+	} else {
+		t := grc20.NewToken(r.TokenName, r.Symbol, r.Decimal)
 
-	t := grc20.NewToken(r.TokenName, r.Symbol, r.Decimal)
+		t.Mint(r.Account, r.TotalSupply)
 
-	t.Mint(r.Account, r.TotalSupply)
+		SaveToken(r.TokenName, t)
+		c.JSON(200, gin.H{
+			"message":     success,
+			"name":        t.GetName(),
+			"symbol":      t.GetSymbol(),
+			"totalSupply": t.GetTotalSupply(),
+			"decimal":     t.GetDecimal(),
+		})
+	}
+}
 
-	db.Add(r.TokenName, utils.StructToByte(t))
+type mintRequest struct {
+	TokenName string `json:"tokenName"`
+	Account   string `json:"account"`
+	Amount    uint64 `json:"amount"`
+}
+
+func Mint(c *gin.Context) {
+	r := mintRequest{}
+	err := c.ShouldBindJSON(&r)
+
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+	t := GetToken(c, r.TokenName)
+
+	t.Mint(r.Account, r.Amount)
+	SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
-		"message":     success,
-		"name":        r.TokenName,
-		"symbol":      r.Symbol,
-		"totalSupply": r.TotalSupply,
-		"decimal":     r.Decimal,
+		"message":      "success",
+		"totalBalance": t.GetTotalSupply(),
 	})
 }
 
@@ -43,10 +78,15 @@ type trasferRequest struct {
 
 func Transfer(c *gin.Context) {
 	r := trasferRequest{}
-	BindJson(c, r)
+	err := c.ShouldBindJSON(&r)
+
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
 	t := GetToken(c, r.TokenName)
-	t.Transfer(r.To, r.From, r.Amount)
-	db.Add(r.TokenName, utils.StructToByte(t))
+	t.Transfer(r.From, r.To, r.Amount)
+	SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
 		"account": r.From,
 		"balance": t.BalanceOf(r.From),
@@ -54,19 +94,26 @@ func Transfer(c *gin.Context) {
 }
 
 type approveRequest struct {
-	tokenName string
-	owner     string
-	spender   string
-	amount    uint64
+	TokenName string `json:"tokenName"`
+	Owner     string `json:"owner"`
+	Spender   string `json:"spender"`
+	Amount    uint64 `json:"amount"`
 }
 
 func Approve(c *gin.Context) {
 	r := approveRequest{}
-	BindJson(c, r)
-	t := GetToken(c, r.tokenName)
-	t.Approve(r.owner, r.spender, r.amount)
+	err := c.ShouldBindJSON(&r)
+
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+	t := GetToken(c, r.TokenName)
+	fmt.Println("t============", t)
+	t.Approve(r.Owner, r.Spender, r.Amount)
+	SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
 		"message":         success,
-		"allowanceAmount": t.Allowance(r.owner, r.spender),
+		"allowanceAmount": t.Allowance(r.Owner, r.Spender),
 	})
 }

@@ -1,12 +1,8 @@
 package router
 
 import (
-	"errors"
 	"net/http"
-	"strconv"
 
-	db "github.com/DonggyuLim/erc20/db"
-	u "github.com/DonggyuLim/erc20/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -144,22 +140,22 @@ func Document(c *gin.Context) {
 // 	})
 // }
 
-func transfer(from, to string, amount uint64) error {
-	//from balance
-	fb, ok := db.Get(from)
+// func transfer(from, to string, amount uint64) error {
+// 	//from balance
+// 	fb, ok := db.Get(from)
 
-	if !ok {
-		return errors.New("not have balance")
-	}
-	//to balance
-	tb, ok := db.Get(to)
-	if !ok {
-		return errors.New("don't exsits account")
-	}
+// 	if !ok {
+// 		return errors.New("not have balance")
+// 	}
+// 	//to balance
+// 	tb, ok := db.Get(to)
+// 	if !ok {
+// 		return errors.New("don't exsits account")
+// 	}
 
-	newfb := u.StringToUint(u.ByteToString(fb)) - amount
-	newtb := u.StringToUint(u.ByteToString(tb)) + amount
-	db.Add(from, []byte(strconv.FormatUint(newfb, 10)))
-	db.Add(to, []byte(strconv.FormatUint(newtb, 10)))
-	return nil
-}
+// 	newfb := u.StringToUint(u.ByteToString(fb)) - amount
+// 	newtb := u.StringToUint(u.ByteToString(tb)) + amount
+// 	db.Add(from, []byte(strconv.FormatUint(newfb, 10)))
+// 	db.Add(to, []byte(strconv.FormatUint(newtb, 10)))
+// 	return nil
+// }

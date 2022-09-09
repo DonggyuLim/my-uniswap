@@ -1,38 +1,38 @@
 package router
 
 import (
-	db "github.com/DonggyuLim/erc20/db"
-	"github.com/DonggyuLim/erc20/utils"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
 type BalanceRequest struct {
-	Name    string
-	Account string
+	TokenName string `json:"tokenName"`
+	Account   string `json:"account"`
 }
 
 func BalanceOf(c *gin.Context) {
-	b := BalanceRequest{}
-	BindJson(c, b)
-	t := GetToken(c, b.Name)
-	balance := t.BalanceOf(b.Account)
-	db.Add(b.Name, utils.StructToByte(t))
+	r := BalanceRequest{}
+	err := c.ShouldBindJSON(&r)
+	fmt.Println("r==========", r)
+	if err != nil {
+		c.String(400, err.Error())
+	}
+	t := GetToken(c, r.TokenName)
+
+	balance := t.BalanceOf(r.Account)
 
 	c.JSON(200, gin.H{
-		"account": b.Account,
+		"account": r.Account,
 		"balance": balance,
 	})
 }
 
-type tokenInfoRequest struct {
-	TokenName string
-}
-
 // 토큰 정보
 func TokenInfo(c *gin.Context) {
-	r := tokenInfoRequest{}
-	BindJson(c, r)
-	t := GetToken(c, r.TokenName)
+	tn := c.Param("name")
+	fmt.Println(tn)
+	t := GetToken(c, tn)
 
 	c.JSON(200, gin.H{
 		"tokenName":   t.GetName(),
@@ -43,17 +43,23 @@ func TokenInfo(c *gin.Context) {
 }
 
 type allowanceRequest struct {
-	tokenName string
-	owner     string
-	spender   string
+	TokenName string `json:"tokenName"`
+	Owner     string `json:"owner"`
+	Spender   string `json:"spender"`
 }
 
 func Allowance(c *gin.Context) {
 	r := allowanceRequest{}
-	BindJson(c, r)
-	t := GetToken(c, r.tokenName)
-	t.Allowance(r.owner, r.spender)
+	err := c.ShouldBindJSON(&r)
+	fmt.Println("r==========", r)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+	t := GetToken(c, r.TokenName)
+	t.Allowance(r.Owner, r.Spender)
+
 	c.JSON(200, gin.H{
-		"allowance": t.Allowance(r.owner, r.spender),
+		"allowance": t.Allowance(r.Owner, r.Spender),
 	})
 }
