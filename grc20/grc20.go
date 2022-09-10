@@ -1,13 +1,5 @@
 package grc20
 
-import (
-	"bytes"
-	"encoding/gob"
-
-	"github.com/DonggyuLim/erc20/db"
-	"github.com/gin-gonic/gin"
-)
-
 type Token struct {
 	Name        string
 	Symbol      string
@@ -17,26 +9,11 @@ type Token struct {
 	Allowances  map[string]uint64
 }
 
-type address string
+// type address string
 
-func NewToken(name, symbol string, decimal uint8) *Token {
-	bm := make(map[string]uint64)
-	am := make(map[string]uint64)
-
-	t := &Token{
-		Name:        name,
-		Symbol:      symbol,
-		Decimal:     decimal,
-		TotalSupply: 0,
-		Balance:     bm,
-		Allowances:  am,
-	}
-	return t
-}
-
-func StringToAddress(data string) address {
-	return address(data)
-}
+// func StringToAddress(data string) address {
+// 	return address(data)
+// }
 
 func (t *Token) GetName() string {
 	return t.Name
@@ -97,27 +74,4 @@ func (t *Token) mint(address string, amount uint64) {
 	currentBalance := t.BalanceOf(address)
 	newBalance := currentBalance + amount
 	t.Balance[address] = newBalance
-}
-
-// byte -> Token
-func ByteToToken(data []byte) *Token {
-	var token *Token
-	encoder := gob.NewDecoder(bytes.NewBuffer(data))
-	err := encoder.Decode(&token)
-	if err != nil {
-		panic(err)
-	}
-	return token
-}
-
-// tokenName -> db -> token
-func GetToken(c *gin.Context, tokenName string) *Token {
-	value, ok := db.Get(tokenName)
-	if !ok {
-		c.String(400, "Don't exsits")
-
-	}
-	t := ByteToToken(value)
-
-	return t
 }
