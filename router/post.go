@@ -3,6 +3,7 @@ package router
 import (
 	"fmt"
 
+	"github.com/DonggyuLim/erc20/Interface"
 	"github.com/DonggyuLim/erc20/db"
 	"github.com/DonggyuLim/erc20/grc20"
 	"github.com/gin-gonic/gin"
@@ -33,7 +34,7 @@ func Deploy(c *gin.Context) {
 
 		t.Mint(r.Account, r.TotalSupply)
 
-		SaveToken(r.TokenName, t)
+		Interface.SaveToken(r.TokenName, t)
 		c.JSON(200, gin.H{
 			"message":     success,
 			"name":        t.GetName(),
@@ -59,7 +60,7 @@ func Mint(c *gin.Context) {
 		return
 	}
 
-	t := GetToken(c, r.TokenName)
+	t := grc20.GetToken(c, r.TokenName)
 
 	t.Mint(r.Account, r.Amount)
 	SaveToken(r.TokenName, t)
@@ -84,7 +85,7 @@ func Transfer(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	t := GetToken(c, r.TokenName)
+	t := grc20.GetToken(c, r.TokenName)
 	t.Transfer(r.From, r.To, r.Amount)
 	SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
@@ -108,7 +109,7 @@ func Approve(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	t := GetToken(c, r.TokenName)
+	t := grc20.GetToken(c, r.TokenName)
 	fmt.Println("t============", t)
 	t.Approve(r.Owner, r.Spender, r.Amount)
 	SaveToken(r.TokenName, t)

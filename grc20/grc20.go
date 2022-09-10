@@ -1,5 +1,13 @@
 package grc20
 
+import (
+	"bytes"
+	"encoding/gob"
+
+	"github.com/DonggyuLim/erc20/db"
+	"github.com/gin-gonic/gin"
+)
+
 type Token struct {
 	Name        string
 	Symbol      string
@@ -76,7 +84,8 @@ func (t *Token) Approve(owner, spender string, amount uint64) {
 
 func (t *Token) approve(owner, spender string, amount uint64) {
 	key := owner + ":" + spender
-	t.Allowances[key] = amount
+	currentBalance := t.Allowances[key]
+	t.Allowances[key] = currentBalance + amount
 }
 
 func (t *Token) Mint(account string, amount uint64) {
@@ -88,4 +97,27 @@ func (t *Token) mint(address string, amount uint64) {
 	currentBalance := t.BalanceOf(address)
 	newBalance := currentBalance + amount
 	t.Balance[address] = newBalance
+}
+
+// byte -> Token
+func ByteToToken(data []byte) *Token {
+	var token *Token
+	encoder := gob.NewDecoder(bytes.NewBuffer(data))
+	err := encoder.Decode(&token)
+	if err != nil {
+		panic(err)
+	}
+	return token
+}
+
+// tokenName -> db -> token
+func GetToken(c *gin.Context, tokenName string) *Token {
+	value, ok := db.Get(tokenName)
+	if !ok {
+		c.String(400, "Don't exsits")
+
+	}
+	t := ByteToToken(value)
+
+	return t
 }
