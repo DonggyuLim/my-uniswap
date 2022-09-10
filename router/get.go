@@ -18,7 +18,11 @@ func BalanceOf(c *gin.Context) {
 	if err != nil {
 		c.String(400, err.Error())
 	}
-	t := GetToken(c, r.TokenName)
+	t, err := GetToken(r.TokenName)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
 
 	balance := t.BalanceOf(r.Account)
 
@@ -31,9 +35,12 @@ func BalanceOf(c *gin.Context) {
 // 토큰 정보
 func TokenInfo(c *gin.Context) {
 	tn := c.Param("name")
-	fmt.Println(tn)
-	t := GetToken(c, tn)
 
+	t, err := GetToken(tn)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
 	c.JSON(200, gin.H{
 		"tokenName":   t.GetName(),
 		"symbol":      t.GetSymbol(),
@@ -56,7 +63,11 @@ func Allowance(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	t := GetToken(c, r.TokenName)
+	t, err := GetToken(r.TokenName)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
 	t.Allowance(r.Owner, r.Spender)
 
 	c.JSON(200, gin.H{

@@ -29,6 +29,7 @@ func Deploy(c *gin.Context) {
 	fmt.Println(ok)
 	if ok {
 		c.String(400, "Exists Token")
+		return
 	} else {
 		t := grc20.NewToken(r.TokenName, r.Symbol, r.Decimal)
 
@@ -60,7 +61,11 @@ func Mint(c *gin.Context) {
 		return
 	}
 
-	t := grc20.GetToken(c, r.TokenName)
+	t, err := GetToken(r.TokenName)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
 
 	t.Mint(r.Account, r.Amount)
 	SaveToken(r.TokenName, t)
@@ -85,7 +90,11 @@ func Transfer(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	t := grc20.GetToken(c, r.TokenName)
+	t, err := GetToken(r.TokenName)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
 	t.Transfer(r.From, r.To, r.Amount)
 	SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
@@ -109,8 +118,11 @@ func Approve(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	t := grc20.GetToken(c, r.TokenName)
-	fmt.Println("t============", t)
+	t, err := GetToken(r.TokenName)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
 	t.Approve(r.Owner, r.Spender, r.Amount)
 	SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{

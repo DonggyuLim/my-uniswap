@@ -3,9 +3,9 @@ package grc20
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 
 	"github.com/DonggyuLim/erc20/db"
-	"github.com/gin-gonic/gin"
 )
 
 func NewToken(name, symbol string, decimal uint8) *Token {
@@ -35,13 +35,13 @@ func ByteToToken(data []byte) *Token {
 }
 
 // tokenName -> db -> token
-func GetToken(c *gin.Context, tokenName string) *Token {
+func GetToken(tokenName string) (*Token, error) {
 	value, ok := db.Get(tokenName)
 	if !ok {
-		c.String(400, "Don't exsits")
+		return &Token{}, errors.New("don't Get token")
 
 	}
 	t := ByteToToken(value)
 
-	return t
+	return t, nil
 }
