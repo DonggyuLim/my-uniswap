@@ -3,6 +3,7 @@ package rest
 import (
 	"fmt"
 
+	u "github.com/DonggyuLim/erc20/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +19,7 @@ func BalanceOf(c *gin.Context) {
 	if err != nil {
 		c.String(400, err.Error())
 	}
-	t, err := GetToken(r.TokenName)
+	t, err := u.GetToken(r.TokenName)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -36,7 +37,7 @@ func BalanceOf(c *gin.Context) {
 func TokenInfo(c *gin.Context) {
 	tn := c.Param("name")
 
-	t, err := GetToken(tn)
+	t, err := u.GetToken(tn)
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -63,7 +64,7 @@ func Allowance(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	t, err := GetToken(r.TokenName)
+	t, err := u.GetToken(r.TokenName)
 	if err != nil {
 		c.String(400, err.Error())
 		return

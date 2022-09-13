@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/DonggyuLim/erc20/Interface"
+	"github.com/DonggyuLim/erc20/grc20"
 )
 
 // byte -> string
@@ -38,4 +39,12 @@ func DataToByte(data Interface.GRC20) []byte {
 	return result.Bytes()
 }
 
+func SaveToken(name string, token Interface.GRC20) {
+	Interface.SaveToken(name, token)
+}
 
+func GetToken(tokenName string) (*grc20.Token, error) {
+	t, err := grc20.GetToken(tokenName)
+
+	return t, err
+}

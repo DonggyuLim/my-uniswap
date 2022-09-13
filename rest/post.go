@@ -6,6 +6,7 @@ import (
 	"github.com/DonggyuLim/erc20/Interface"
 	"github.com/DonggyuLim/erc20/db"
 	"github.com/DonggyuLim/erc20/grc20"
+	u "github.com/DonggyuLim/erc20/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -61,14 +62,14 @@ func Mint(c *gin.Context) {
 		return
 	}
 
-	t, err := GetToken(r.TokenName)
+	t, err := u.GetToken(r.TokenName)
 	if err != nil {
 		c.String(400, err.Error())
 		return
 	}
 
 	t.Mint(r.Account, r.Amount)
-	SaveToken(r.TokenName, t)
+	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
 		"message":      "success",
 		"totalBalance": t.GetTotalSupply(),
@@ -90,13 +91,17 @@ func Transfer(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	t, err := GetToken(r.TokenName)
+	t, err := u.GetToken(r.TokenName)
 	if err != nil {
 		c.String(400, err.Error())
 		return
 	}
-	t.Transfer(r.From, r.To, r.Amount)
-	SaveToken(r.TokenName, t)
+	err = t.Transfer(r.From, r.To, r.Amount)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
 		"account": r.From,
 		"balance": t.BalanceOf(r.From),
@@ -118,13 +123,17 @@ func Approve(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	t, err := GetToken(r.TokenName)
+	t, err := u.GetToken(r.TokenName)
 	if err != nil {
 		c.String(400, err.Error())
 		return
 	}
-	t.Approve(r.Owner, r.Spender, r.Amount)
-	SaveToken(r.TokenName, t)
+	err = t.Approve(r.Owner, r.Spender, r.Amount)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
 		"message":         success,
 		"allowanceAmount": t.Allowance(r.Owner, r.Spender),

@@ -16,15 +16,12 @@ service RPC{
 }
 
 
-message tokenName{
-    string tokenName = 1;
-}
 
 ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////
 //Mutate
 message TransferRequest{
-   tokenName tokenName =1;
+   string tokenName =1;
    string to  = 2;
    string from = 3;
    uint64 amount = 4;
@@ -37,7 +34,7 @@ message TransferResponse{
 }
 
 message ApproveRequest{
-    tokenName tokenName = 1;
+    string tokenName = 1;
     string owner = 2;
     string spender = 3;
     uint64 amount = 4;
@@ -52,32 +49,35 @@ message ApproveResponse{
 ///////////////////////////////////////////////
 //Query
 message GetBalanceRequest{
-    tokenName tokenName = 1;
+    string tokenName = 1;
     string account = 2;
 }
 
 message GetBalanceResponse{
-    uint64 balance = 1;
+    bool success = 1;
+    uint64 balance = 2;
 }
 
 message TokenInfoRequest{
-    tokenName tokenName = 1;
+    string tokenName = 1;
 }
 
 message TokenInfoResponse{
-    string tokenName = 1;
-    string symbol = 2;
-    string decimal = 3;
-    string totalSupply = 4;
+    bool success = 1;
+    string tokenName = 2;
+    string symbol = 3;
+    uint32 decimal = 4;
+    uint64 totalSupply = 5;
 }
 
 
 message AllowanceRequest{
-    tokenName tokenName = 1;
+    string tokenName = 1;
     string owner = 2;
     string spender = 3;
 }
 
 message AllowanceResponse{
-    uint64 balance = 1;
+    bool success = 1;
+    uint64 balance = 2;
 }

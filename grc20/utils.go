@@ -45,3 +45,11 @@ func GetToken(tokenName string) (*Token, error) {
 
 	return t, nil
 }
+
+func (t *Token) CheckBalance(owner string, amount uint64) error {
+	balance := t.BalanceOf(owner)
+	if balance < amount {
+		return errors.New("amount is biger than owner balance")
+	}
+	return nil
+}
