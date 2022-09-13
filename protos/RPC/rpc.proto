@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package erc20;
+
+option go_package = "github.com/DonggyuLim/erc20/protos/RPC/rpc";
+
+service RPC{
+    //Mutate
+    rpc Transfer(TransferRequest)returns(TransferResponse);
+    rpc Approve(ApproveRequest)returns(ApproveResponse);
+
+    //Query
+    rpc GetBalance(GetBalanceRequest)returns (GetBalanceResponse);
+    rpc GetTokenInfo(TokenInfoRequest) returns (TokenInfoResponse);
+    rpc GetAllowance(AllowanceRequest) returns (AllowanceResponse);    
+}
+
+
+message tokenName{
+    string tokenName = 1;
+}
+
+///////////////////////////////////////////////////
+///////////////////////////////////////////////////
+//Mutate
+message TransferRequest{
+   tokenName tokenName =1;
+   string to  = 2;
+   string from = 3;
+   uint64 amount = 4;
+}
+
+message TransferResponse{
+    bool success = 1;
+    uint64 toBalance = 2;
+    uint64 fromBalance = 3;
+}
+
+message ApproveRequest{
+    tokenName tokenName = 1;
+    string owner = 2;
+    string spender = 3;
+    uint64 amount = 4;
+}
+
+message ApproveResponse{
+    bool success = 1;
+    uint64 balance = 2;
+}
+
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+//Query
+message GetBalanceRequest{
+    tokenName tokenName = 1;
+    string account = 2;
+}
+
+message GetBalanceResponse{
+    uint64 balance = 1;
+}
+
+message TokenInfoRequest{
+    tokenName tokenName = 1;
+}
+
+message TokenInfoResponse{
+    string tokenName = 1;
+    string symbol = 2;
+    string decimal = 3;
+    string totalSupply = 4;
+}
+
+
+message AllowanceRequest{
+    tokenName tokenName = 1;
+    string owner = 2;
+    string spender = 3;
+}
+
+message AllowanceResponse{
+    uint64 balance = 1;
+}

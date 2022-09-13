@@ -1,25 +1,21 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/DonggyuLim/erc20/db"
-	"github.com/DonggyuLim/erc20/router"
-	"github.com/gin-gonic/gin"
+	"github.com/DonggyuLim/erc20/rest"
+	"github.com/DonggyuLim/erc20/rpc"
 )
 
+var wg *sync.WaitGroup
+
 func main() {
+	wg.Add(2)
 	db.NewDB()
 	defer db.Close()
-	r := gin.Default()
-	//GET
-	r.GET("/", router.Document)
-	r.GET("/balance", router.BalanceOf)
-	r.GET("/allowance", router.Allowance)
-	r.GET("/token/:name", router.TokenInfo)
+	go rest.Rest(wg)
+	go rpc.Grpc(wg)
+	wg.Wait()
 
-	//POST
-	r.POST("/deploy", router.Deploy)
-	r.POST("/mint", router.Mint)
-	r.POST("/transfer", router.Transfer)
-	r.POST("/approve", router.Approve)
-	r.Run()
 }

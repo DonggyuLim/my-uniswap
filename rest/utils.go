@@ -1,4 +1,4 @@
-package router
+package rest
 
 import (
 	"github.com/DonggyuLim/erc20/Interface"
