@@ -9,7 +9,7 @@ Content-Type: "application/json"
 {
     "tokenName":"USDT",
     "symbol":"USDT",
-    "totalSupply":100000000000000,
+    "totalSupply":100,
     "decimal":10,
     "account":"0xb"
 }
@@ -22,7 +22,7 @@ Content-Type: "application/json"
 
 {
     "tokenName":"USDT",
-    "account":"0xb"
+    "account":"0x10000000"
 }
 
 ###
@@ -31,7 +31,7 @@ Content-Type: "application/json"
 
 {
     "tokenName":"USDT",
-    "account":"0xa"
+    "account":"0x10000"
 }
 /////////////////////////////////////////////////////////////////
 //transfer from -> to
@@ -44,7 +44,7 @@ Content-Type: "application/json"
     "tokenName":"USDT",
     "from":"0xb",
     "to":"0xa",
-    "amount":10000000
+    "amount":10
 }
 /////////////////////////////////////////////////////////////////////
 ###
@@ -74,7 +74,7 @@ Content-Type: "application/json"
     "tokenName":"USDT",
     "owner":"0xa",
     "spender":"0xb",
-    "amount":1000000
+    "amount":10
 }
 
 /////////////////////////////////////////////////////////////
@@ -86,5 +86,5 @@ Content-Type: "application/json"
 {
     "tokenName":"USDT",
     "account":"0xb",
-    "amount":9999999999999999
+    "amount":10
 }
