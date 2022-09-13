@@ -38,18 +38,10 @@ func ByteToToken(data []byte) *Token {
 func GetToken(tokenName string) (*Token, error) {
 	value, ok := db.Get(tokenName)
 	if !ok {
-		return &Token{}, errors.New("don't Get token")
+		return &Token{}, errors.New("invalid token")
 
 	}
 	t := ByteToToken(value)
 
 	return t, nil
-}
-
-func (t *Token) CheckBalance(owner string, amount uint64) error {
-	balance := t.BalanceOf(owner)
-	if balance < amount {
-		return errors.New("amount is biger than owner balance")
-	}
-	return nil
 }

@@ -7,12 +7,14 @@ option go_package = "github.com/DonggyuLim/erc20/protos/RPC/rpc";
 service RPC{
     //Mutate
     rpc Transfer(TransferRequest)returns(TransferResponse);
+    rpc TransferFrom(TransferFromRequest)returns(TransferFromResponse);
     rpc Approve(ApproveRequest)returns(ApproveResponse);
 
     //Query
     rpc GetBalance(GetBalanceRequest)returns (GetBalanceResponse);
     rpc GetTokenInfo(TokenInfoRequest) returns (TokenInfoResponse);
     rpc GetAllowance(AllowanceRequest) returns (AllowanceResponse);    
+    
 }
 
 
@@ -45,6 +47,19 @@ message ApproveResponse{
     uint64 balance = 2;
 }
 
+
+message TransferFromRequest{
+    string tokenName = 1;
+    string from = 2;
+    string to = 3;
+    string spender = 4;
+    uint64 amount = 5;
+}
+message TransferFromResponse{
+    bool success = 1;
+    uint64 toBalance = 2;
+    uint64 fromBalance = 3;
+}
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 //Query

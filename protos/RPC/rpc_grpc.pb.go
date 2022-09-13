@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type RPCClient interface {
 	// Mutate
 	Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*TransferResponse, error)
+	TransferFrom(ctx context.Context, in *TransferFromRequest, opts ...grpc.CallOption) (*TransferFromResponse, error)
 	Approve(ctx context.Context, in *ApproveRequest, opts ...grpc.CallOption) (*ApproveResponse, error)
 	// Query
 	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*GetBalanceResponse, error)
@@ -42,6 +43,15 @@ func NewRPCClient(cc grpc.ClientConnInterface) RPCClient {
 func (c *rPCClient) Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*TransferResponse, error) {
 	out := new(TransferResponse)
 	err := c.cc.Invoke(ctx, "/erc20.RPC/Transfer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCClient) TransferFrom(ctx context.Context, in *TransferFromRequest, opts ...grpc.CallOption) (*TransferFromResponse, error) {
+	out := new(TransferFromResponse)
+	err := c.cc.Invoke(ctx, "/erc20.RPC/TransferFrom", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +100,7 @@ func (c *rPCClient) GetAllowance(ctx context.Context, in *AllowanceRequest, opts
 type RPCServer interface {
 	// Mutate
 	Transfer(context.Context, *TransferRequest) (*TransferResponse, error)
+	TransferFrom(context.Context, *TransferFromRequest) (*TransferFromResponse, error)
 	Approve(context.Context, *ApproveRequest) (*ApproveResponse, error)
 	// Query
 	GetBalance(context.Context, *GetBalanceRequest) (*GetBalanceResponse, error)
@@ -104,6 +115,9 @@ type UnimplementedRPCServer struct {
 
 func (UnimplementedRPCServer) Transfer(context.Context, *TransferRequest) (*TransferResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Transfer not implemented")
+}
+func (UnimplementedRPCServer) TransferFrom(context.Context, *TransferFromRequest) (*TransferFromResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TransferFrom not implemented")
 }
 func (UnimplementedRPCServer) Approve(context.Context, *ApproveRequest) (*ApproveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Approve not implemented")
@@ -144,6 +158,24 @@ func _RPC_Transfer_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCServer).Transfer(ctx, req.(*TransferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPC_TransferFrom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransferFromRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).TransferFrom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/erc20.RPC/TransferFrom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).TransferFrom(ctx, req.(*TransferFromRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -230,6 +262,10 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Transfer",
 			Handler:    _RPC_Transfer_Handler,
+		},
+		{
+			MethodName: "TransferFrom",
+			Handler:    _RPC_TransferFrom_Handler,
 		},
 		{
 			MethodName: "Approve",

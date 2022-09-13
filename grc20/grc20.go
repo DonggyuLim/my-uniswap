@@ -48,6 +48,11 @@ func (t *Token) allowance(owner, spender string) uint64 {
 }
 
 // /////////////////////////////////////////////////
+// /////////////////////////////////////////////////
+// /////////////////////////////////////////////////
+// /////////////////////////////////////////////////
+// Mutate
+
 func (t *Token) Transfer(from, to string, amount uint64) error {
 	err := t.checkBalance(from, amount)
 	if err != nil {
@@ -57,16 +62,12 @@ func (t *Token) Transfer(from, to string, amount uint64) error {
 	return nil
 }
 func (t *Token) transfer(from, to string, amount uint64) {
-
 	fromBalance := t.Balance[from]
-
 	t.Balance[from] = fromBalance - amount
 	toBalance := t.Balance[to]
 	t.Balance[to] = toBalance + amount
 
 }
-
-/////////////////////////////////////
 
 func (t *Token) Approve(owner, spender string, amount uint64) error {
 	if err := t.checkBalance(owner, amount); err != nil {
@@ -84,8 +85,6 @@ func (t *Token) approve(owner, spender string, amount uint64) error {
 	return nil
 }
 
-// /////////////////////////////////////
-
 func (t *Token) TransferFrom(from, to, spender string, amount uint64) error {
 	if err := t.checkspendAllowance(from, spender, amount); err != nil {
 		return err
@@ -93,8 +92,6 @@ func (t *Token) TransferFrom(from, to, spender string, amount uint64) error {
 	t.transfer(from, to, amount)
 	return nil
 }
-
-////////////////////////////
 
 func (t *Token) Mint(account string, amount uint64) {
 	t.mint(account, amount)

@@ -53,7 +53,7 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 		return &rpc.ApproveResponse{
 			Success: false,
 			Balance: 0,
-		}, errors.New("invalid token")
+		}, err
 	}
 	t.Approve(owner, spender, amount)
 
@@ -64,6 +64,38 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 	}, nil
 }
 
+func (r *RPCServer) TransferFrom(ctx context.Context, req *rpc.TransferFromRequest) (*rpc.TransferFromResponse, error) {
+	tokenName := req.GetTokenName()
+	from := req.GetFrom()
+	to := req.GetTo()
+	spender := req.GetSpender()
+	amount := req.GetAmount()
+
+	t, err := u.GetToken(tokenName)
+	if err != nil {
+		return &rpc.TransferFromResponse{
+			Success:     false,
+			ToBalance:   0,
+			FromBalance: 0,
+		}, err
+	}
+	err = t.TransferFrom(from, to, spender, amount)
+	if err != nil {
+		return &rpc.TransferFromResponse{
+			Success:     false,
+			ToBalance:   0,
+			FromBalance: 0,
+		}, err
+	}
+	u.SaveToken(tokenName, t)
+	return &rpc.TransferFromResponse{
+		Success:     true,
+		ToBalance:   t.BalanceOf(to),
+		FromBalance: t.BalanceOf(from),
+	}, nil
+
+}
+
 func (r *RPCServer) GetBalance(ctx context.Context, req *rpc.GetBalanceRequest) (*rpc.GetBalanceResponse, error) {
 
 	t, err := u.GetToken(req.GetTokenName())
@@ -71,7 +103,7 @@ func (r *RPCServer) GetBalance(ctx context.Context, req *rpc.GetBalanceRequest) 
 		return &rpc.GetBalanceResponse{
 			Success: false,
 			Balance: 0,
-		}, errors.New("invalid token")
+		}, err
 	}
 	balance := t.BalanceOf(req.GetAccount())
 	return &rpc.GetBalanceResponse{

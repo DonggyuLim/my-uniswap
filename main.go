@@ -17,5 +17,4 @@ func main() {
 	go rest.Rest(wg)
 	go rpc.Grpc(wg)
 	wg.Wait()
-
 }
