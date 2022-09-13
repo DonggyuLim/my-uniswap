@@ -14,6 +14,7 @@ type GRC20 interface {
 	BalanceOf(account string) uint64
 	GetDecimal() uint8
 	Transfer(from, to string, amount uint64) error
+	TransferFrom(from, to, sepnder string, amount uint64) error
 	Allowance(owner, spender string) uint64
 	Approve(owner, spender string, amount uint64) error
 	Mint(account string, amount uint64)

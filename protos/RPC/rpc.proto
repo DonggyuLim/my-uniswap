@@ -10,11 +10,12 @@ service RPC{
     rpc TransferFrom(TransferFromRequest)returns(TransferFromResponse);
     rpc Approve(ApproveRequest)returns(ApproveResponse);
 
+
+
     //Query
     rpc GetBalance(GetBalanceRequest)returns (GetBalanceResponse);
     rpc GetTokenInfo(TokenInfoRequest) returns (TokenInfoResponse);
     rpc GetAllowance(AllowanceRequest) returns (AllowanceResponse);    
-    
 }
 
 
@@ -44,7 +45,7 @@ message ApproveRequest{
 
 message ApproveResponse{
     bool success = 1;
-    uint64 balance = 2;
+    uint64 allowance = 2;
 }
 
 
@@ -94,5 +95,5 @@ message AllowanceRequest{
 
 message AllowanceResponse{
     bool success = 1;
-    uint64 balance = 2;
+    uint64 allowance = 2;
 }

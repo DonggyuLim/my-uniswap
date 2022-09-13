@@ -6,8 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const RestPort = "8080"
-
 func Rest(wg *sync.WaitGroup) {
 	r := gin.Default()
 	//GET
@@ -20,7 +18,8 @@ func Rest(wg *sync.WaitGroup) {
 	r.POST("/deploy", Deploy)
 	r.POST("/mint", Mint)
 	r.POST("/transfer", Transfer)
+	r.POST("/transferFrom", TransferFrom)
 	r.POST("/approve", Approve)
-	r.Run(RestPort)
+	r.Run()
 	defer wg.Done()
 }

@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"errors"
 	"log"
 	"net"
 	"sync"
@@ -32,7 +31,7 @@ func (r *RPCServer) Transfer(ctx context.Context, req *rpc.TransferRequest) (*rp
 			Success:     false,
 			ToBalance:   0,
 			FromBalance: 0,
-		}, errors.New("invalid token")
+		}, err
 	}
 	t.Transfer(from, to, amount)
 	u.SaveToken(tokenName, t)
@@ -51,16 +50,16 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 	t, err := u.GetToken(tokenName)
 	if err != nil {
 		return &rpc.ApproveResponse{
-			Success: false,
-			Balance: 0,
+			Success:   false,
+			Allowance: 0,
 		}, err
 	}
 	t.Approve(owner, spender, amount)
 
 	u.SaveToken(tokenName, t)
 	return &rpc.ApproveResponse{
-		Success: true,
-		Balance: t.Allowance(owner, spender),
+		Success:   true,
+		Allowance: t.Allowance(owner, spender),
 	}, nil
 }
 
@@ -93,7 +92,6 @@ func (r *RPCServer) TransferFrom(ctx context.Context, req *rpc.TransferFromReque
 		ToBalance:   t.BalanceOf(to),
 		FromBalance: t.BalanceOf(from),
 	}, nil
-
 }
 
 func (r *RPCServer) GetBalance(ctx context.Context, req *rpc.GetBalanceRequest) (*rpc.GetBalanceResponse, error) {
@@ -121,7 +119,7 @@ func (r *RPCServer) GetTokenInfo(ctx context.Context, req *rpc.TokenInfoRequest)
 			Symbol:      "",
 			Decimal:     0,
 			TotalSupply: 0,
-		}, errors.New("invalid token")
+		}, err
 	}
 	return &rpc.TokenInfoResponse{
 		Success:     true,
@@ -136,14 +134,14 @@ func (r *RPCServer) GetAllowance(ctx context.Context, req *rpc.AllowanceRequest)
 	t, err := u.GetToken(req.GetTokenName())
 	if err != nil {
 		return &rpc.AllowanceResponse{
-			Success: false,
-			Balance: 0,
-		}, errors.New("invalid token")
+			Success:   false,
+			Allowance: 0,
+		}, err
 	}
 	allowance := t.Allowance(req.GetOwner(), req.GetSpender())
 	return &rpc.AllowanceResponse{
-		Success: true,
-		Balance: allowance,
+		Success:   true,
+		Allowance: allowance,
 	}, nil
 }
 

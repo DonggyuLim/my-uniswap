@@ -139,3 +139,36 @@ func Approve(c *gin.Context) {
 		"allowanceAmount": t.Allowance(r.Owner, r.Spender),
 	})
 }
+
+type transferFromRequest struct {
+	TokenName string `json:"tokenName"`
+	From      string `json:"from"`
+	To        string `json:"to"`
+	Spender   string `json:"spender"`
+	Amount    uint64 `json:"amount"`
+}
+
+func TransferFrom(c *gin.Context) {
+	r := transferFromRequest{}
+	err := c.ShouldBindJSON(&r)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+	t, err := u.GetToken(r.TokenName)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+	err = t.TransferFrom(r.From, r.To, r.Spender, r.Amount)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+	u.SaveToken(r.TokenName, t)
+	c.JSON(200, gin.H{
+		"message":     success,
+		"toBalance":   t.BalanceOf(r.To),
+		"fromBalance": t.BalanceOf(r.From),
+	})
+}

@@ -8,9 +8,8 @@ import (
 	"github.com/DonggyuLim/erc20/rpc"
 )
 
-var wg *sync.WaitGroup
-
 func main() {
+	wg := &sync.WaitGroup{}
 	wg.Add(2)
 	db.NewDB()
 	defer db.Close()

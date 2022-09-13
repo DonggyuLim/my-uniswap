@@ -10,11 +10,9 @@ import (
 
 var db *badger.DB
 
-var DBName = "./erc20"
-
 func NewDB() {
 	if db == nil {
-		dbPointer, err := badger.Open(badger.DefaultOptions("./storage"))
+		dbPointer, err := badger.Open(badger.DefaultOptions("./badger/contract"))
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -38,7 +38,7 @@ func ByteToToken(data []byte) *Token {
 func GetToken(tokenName string) (*Token, error) {
 	value, ok := db.Get(tokenName)
 	if !ok {
-		return &Token{}, errors.New("invalid token")
+		return &Token{}, errors.New("don't Get token")
 
 	}
 	t := ByteToToken(value)
