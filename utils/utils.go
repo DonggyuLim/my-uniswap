@@ -30,7 +30,7 @@ func UintToString(data uint64) string {
 }
 
 // GRC20struct -> byte
-func DataToByte(data Interface.GRC20) []byte {
+func GRC20ToByte(data Interface.GRC20) []byte {
 	var result bytes.Buffer
 	enc := gob.NewEncoder(&result)
 	err := enc.Encode(data)
