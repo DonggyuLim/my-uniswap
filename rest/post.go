@@ -5,7 +5,7 @@ import (
 
 	"github.com/DonggyuLim/grc20/Interface"
 	"github.com/DonggyuLim/grc20/db"
-	"github.com/DonggyuLim/grc20/grc20"
+	"github.com/DonggyuLim/grc20/token"
 	u "github.com/DonggyuLim/grc20/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -32,7 +32,7 @@ func Deploy(c *gin.Context) {
 		c.String(400, "Exists Token")
 		return
 	} else {
-		t := grc20.NewToken(r.TokenName, r.Symbol, r.Decimal)
+		t := token.NewToken(r.TokenName, r.Symbol, r.Decimal)
 
 		t.Mint(r.Account, r.TotalSupply)
 

@@ -3,10 +3,11 @@ package utils
 import (
 	"bytes"
 	"encoding/gob"
+
 	"strconv"
 
 	"github.com/DonggyuLim/grc20/Interface"
-	"github.com/DonggyuLim/grc20/grc20"
+	"github.com/DonggyuLim/grc20/token"
 )
 
 // byte -> string
@@ -43,8 +44,8 @@ func SaveToken(name string, token Interface.GRC20) {
 	Interface.SaveToken(name, token)
 }
 
-func GetToken(tokenName string) (*grc20.Token, error) {
-	t, err := grc20.GetToken(tokenName)
+func GetToken(tokenName string) (*token.Token, error) {
+	t, err := token.GetToken(tokenName)
 
 	return t, err
 }

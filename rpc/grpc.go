@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	rpc "github.com/DonggyuLim/grc20/protos/RPC"
-
 	u "github.com/DonggyuLim/grc20/utils"
 	"google.golang.org/grpc"
 )
