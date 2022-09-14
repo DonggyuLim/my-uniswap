@@ -64,7 +64,6 @@ func (t *Token) transfer(from, to string, amount uint64) {
 	t.Balance[from] = fromBalance - amount
 	toBalance := t.Balance[to]
 	t.Balance[to] = toBalance + amount
-
 }
 
 func (t *Token) Approve(owner, spender string, amount uint64) error {
