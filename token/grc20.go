@@ -106,5 +106,15 @@ func (t *Token) mint(address string, amount decimal.Decimal) {
 	t.Balance[address] = newBalance
 }
 
+func (t *Token) Burn(address string, amount decimal.Decimal) {
+	t.burn(address, amount)
+}
+
+func (t *Token) burn(address string, amount decimal.Decimal) {
+	currentBalance := t.BalanceOf(address)
+	newBalance := currentBalance.Sub(amount)
+	t.Balance[address] = newBalance
+}
+
 // ///////////////////////////////////
 // //////////////////////////////////
