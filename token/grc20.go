@@ -53,7 +53,7 @@ func (t *Token) allowance(owner, spender string) decimal.Decimal {
 // /////////////////////////////////////////////////
 // Mutate
 
-func (t *Token) Transfer(from, to string, amount uint64) error {
+func (t *Token) Transfer(from, to string, amount decimal.Decimal) error {
 	err := t.checkBalance(from, amount)
 	if err != nil {
 		return err
@@ -61,15 +61,15 @@ func (t *Token) Transfer(from, to string, amount uint64) error {
 	t.transfer(from, to, amount)
 	return nil
 }
-func (t *Token) transfer(from, to string, amount uint64) {
-	newAmount := decimal.New(int64(amount), 10)
+func (t *Token) transfer(from, to string, amount decimal.Decimal) {
+
 	fromBalance := t.Balance[from]
-	t.Balance[from] = fromBalance.Sub(newAmount)
+	t.Balance[from] = fromBalance.Sub(amount)
 	toBalance := t.Balance[to]
-	t.Balance[to] = toBalance.Add(newAmount)
+	t.Balance[to] = toBalance.Add(amount)
 }
 
-func (t *Token) Approve(owner, spender string, amount uint64) error {
+func (t *Token) Approve(owner, spender string, amount decimal.Decimal) error {
 	if err := t.checkBalance(owner, amount); err != nil {
 		return err
 	}
@@ -77,15 +77,15 @@ func (t *Token) Approve(owner, spender string, amount uint64) error {
 	return nil
 }
 
-func (t *Token) approve(owner, spender string, amount uint64) error {
-	newAmount := decimal.New(int64(amount), 10)
+func (t *Token) approve(owner, spender string, amount decimal.Decimal) error {
+
 	key := owner + ":" + spender
 	currentBalance := t.Allowances[key]
-	t.Allowances[key] = currentBalance.Add(newAmount)
+	t.Allowances[key] = currentBalance.Add(amount)
 	return nil
 }
 
-func (t *Token) TransferFrom(from, to, spender string, amount uint64) error {
+func (t *Token) TransferFrom(from, to, spender string, amount decimal.Decimal) error {
 	if err := t.checkspendAllowance(from, spender, amount); err != nil {
 		return err
 	}
@@ -93,17 +93,16 @@ func (t *Token) TransferFrom(from, to, spender string, amount uint64) error {
 	return nil
 }
 
-func (t *Token) Mint(account string, amount uint64) {
+func (t *Token) Mint(account string, amount decimal.Decimal) {
 	t.mint(account, amount)
 }
 
-func (t *Token) mint(address string, amount uint64) {
-	newAmount := decimal.New(int64(amount), 10)
+func (t *Token) mint(address string, amount decimal.Decimal) {
 
-	t.TotalSupply = t.TotalSupply.Add(newAmount)
+	t.TotalSupply = t.TotalSupply.Add(amount)
 	currentBalance := t.BalanceOf(address)
 	// newBalance := currentBalance + amount
-	newBalance := currentBalance.Add(newAmount)
+	newBalance := currentBalance.Add(amount)
 	t.Balance[address] = newBalance
 }
 

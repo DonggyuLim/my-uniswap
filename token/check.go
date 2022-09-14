@@ -7,17 +7,17 @@ import (
 )
 
 // check
-func (t *Token) checkBalance(owner string, amount uint64) error {
+func (t *Token) checkBalance(owner string, amount decimal.Decimal) error {
 	balance := t.BalanceOf(owner)
-	if balance.Cmp(decimal.New(int64(amount), 10)) == -1 {
+	if balance.Cmp(amount) == -1 {
 		return errors.New("amount is biger than owner balance")
 	}
 	return nil
 }
 
-func (t *Token) checkspendAllowance(owner, spender string, amount uint64) error {
+func (t *Token) checkspendAllowance(owner, spender string, amount decimal.Decimal) error {
 	Allowance := t.allowance(owner, spender)
-	if Allowance.Cmp(decimal.New(int64(amount), 10)) == -1 {
+	if Allowance.Cmp(amount) == -1 {
 		return errors.New("amount is biger than allowance")
 	}
 	return nil

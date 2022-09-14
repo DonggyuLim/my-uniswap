@@ -32,7 +32,7 @@ func (r *RPCServer) Transfer(ctx context.Context, req *rpc.TransferRequest) (*rp
 			FromBalance: 0,
 		}, err
 	}
-	t.Transfer(from, to, amount)
+	t.Transfer(from, to, u.UintToDecimal(amount))
 	u.SaveToken(tokenName, t)
 	return &rpc.TransferResponse{
 		Success:     true,
@@ -53,7 +53,7 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 			Allowance: 0,
 		}, err
 	}
-	t.Approve(owner, spender, amount)
+	t.Approve(owner, spender, u.UintToDecimal(amount))
 
 	u.SaveToken(tokenName, t)
 	return &rpc.ApproveResponse{
@@ -77,7 +77,7 @@ func (r *RPCServer) TransferFrom(ctx context.Context, req *rpc.TransferFromReque
 			FromBalance: 0,
 		}, err
 	}
-	err = t.TransferFrom(from, to, spender, amount)
+	err = t.TransferFrom(from, to, spender, u.UintToDecimal(amount))
 	if err != nil {
 		return &rpc.TransferFromResponse{
 			Success:     false,

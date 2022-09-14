@@ -8,6 +8,7 @@ import (
 
 	"github.com/DonggyuLim/grc20/Interface"
 	"github.com/DonggyuLim/grc20/token"
+	"github.com/shopspring/decimal"
 )
 
 // byte -> string
@@ -38,6 +39,12 @@ func GRC20ToByte(data Interface.GRC20) []byte {
 		panic(err)
 	}
 	return result.Bytes()
+}
+
+// unit64 -> decimal.Decimal
+func UintToDecimal(num uint64) decimal.Decimal {
+	result := decimal.NewFromInt(int64(num))
+	return result
 }
 
 func SaveToken(name string, token Interface.GRC20) {

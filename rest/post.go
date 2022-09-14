@@ -34,7 +34,8 @@ func Deploy(c *gin.Context) {
 	} else {
 		t := token.NewToken(r.TokenName, r.Symbol, r.Decimal)
 
-		t.Mint(r.Account, r.TotalSupply)
+		// t.Mint(r.Account, r.TotalSupply)
+		t.Mint(r.Account, u.UintToDecimal(r.TotalSupply))
 
 		Interface.SaveToken(r.TokenName, t)
 		c.JSON(200, gin.H{
@@ -68,7 +69,7 @@ func Mint(c *gin.Context) {
 		return
 	}
 
-	t.Mint(r.Account, r.Amount)
+	t.Mint(r.Account, u.UintToDecimal(r.Amount))
 	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
 		"message":      "success",
@@ -96,7 +97,7 @@ func Transfer(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	err = t.Transfer(r.From, r.To, r.Amount)
+	err = t.Transfer(r.From, r.To, u.UintToDecimal(r.Amount))
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -128,7 +129,7 @@ func Approve(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	err = t.Approve(r.Owner, r.Spender, r.Amount)
+	err = t.Approve(r.Owner, r.Spender, u.UintToDecimal(r.Amount))
 	if err != nil {
 		c.String(400, err.Error())
 		return
@@ -160,7 +161,7 @@ func TransferFrom(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	err = t.TransferFrom(r.From, r.To, r.Spender, r.Amount)
+	err = t.TransferFrom(r.From, r.To, r.Spender, u.UintToDecimal(r.Amount))
 	if err != nil {
 		c.String(400, err.Error())
 		return
