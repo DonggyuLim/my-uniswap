@@ -1,12 +1,14 @@
 package token
 
+import "github.com/shopspring/decimal"
+
 type Token struct {
 	Name        string
 	Symbol      string
 	Decimal     uint8
-	TotalSupply uint64
-	Balance     map[string]uint64
-	Allowances  map[string]uint64
+	TotalSupply decimal.Decimal
+	Balance     map[string]decimal.Decimal
+	Allowances  map[string]decimal.Decimal
 }
 
 // type address string
@@ -25,11 +27,11 @@ func (t *Token) GetName() string {
 func (t *Token) GetSymbol() string {
 	return t.Symbol
 }
-func (t *Token) GetTotalSupply() uint64 {
+func (t *Token) GetTotalSupply() decimal.Decimal {
 	return t.TotalSupply
 }
 
-func (t *Token) BalanceOf(account string) uint64 {
+func (t *Token) BalanceOf(account string) decimal.Decimal {
 	return t.Balance[account]
 }
 
@@ -37,10 +39,10 @@ func (t *Token) GetDecimal() uint8 {
 	return t.Decimal
 }
 
-func (t *Token) Allowance(owner, spender string) uint64 {
+func (t *Token) Allowance(owner, spender string) decimal.Decimal {
 	return t.allowance(owner, spender)
 }
-func (t *Token) allowance(owner, spender string) uint64 {
+func (t *Token) allowance(owner, spender string) decimal.Decimal {
 	key := owner + ":" + spender
 	return t.Allowances[key]
 }
@@ -60,10 +62,11 @@ func (t *Token) Transfer(from, to string, amount uint64) error {
 	return nil
 }
 func (t *Token) transfer(from, to string, amount uint64) {
+	newAmount := decimal.New(int64(amount), 10)
 	fromBalance := t.Balance[from]
-	t.Balance[from] = fromBalance - amount
+	t.Balance[from] = fromBalance.Sub(newAmount)
 	toBalance := t.Balance[to]
-	t.Balance[to] = toBalance + amount
+	t.Balance[to] = toBalance.Add(newAmount)
 }
 
 func (t *Token) Approve(owner, spender string, amount uint64) error {
@@ -75,10 +78,10 @@ func (t *Token) Approve(owner, spender string, amount uint64) error {
 }
 
 func (t *Token) approve(owner, spender string, amount uint64) error {
-
+	newAmount := decimal.New(int64(amount), 10)
 	key := owner + ":" + spender
 	currentBalance := t.Allowances[key]
-	t.Allowances[key] = currentBalance + amount
+	t.Allowances[key] = currentBalance.Add(newAmount)
 	return nil
 }
 
@@ -95,9 +98,12 @@ func (t *Token) Mint(account string, amount uint64) {
 }
 
 func (t *Token) mint(address string, amount uint64) {
-	t.TotalSupply += amount
+	newAmount := decimal.New(int64(amount), 10)
+
+	t.TotalSupply = t.TotalSupply.Add(newAmount)
 	currentBalance := t.BalanceOf(address)
-	newBalance := currentBalance + amount
+	// newBalance := currentBalance + amount
+	newBalance := currentBalance.Add(newAmount)
 	t.Balance[address] = newBalance
 }
 

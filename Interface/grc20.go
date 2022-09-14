@@ -5,17 +5,18 @@ import (
 	"encoding/gob"
 
 	"github.com/DonggyuLim/grc20/db"
+	"github.com/shopspring/decimal"
 )
 
 type GRC20 interface {
 	GetName() string
 	GetSymbol() string
-	GetTotalSupply() uint64
-	BalanceOf(account string) uint64
+	GetTotalSupply() decimal.Decimal
+	BalanceOf(account string) decimal.Decimal
 	GetDecimal() uint8
 	Transfer(from, to string, amount uint64) error
 	TransferFrom(from, to, sepnder string, amount uint64) error
-	Allowance(owner, spender string) uint64
+	Allowance(owner, spender string) decimal.Decimal
 	Approve(owner, spender string, amount uint64) error
 	Mint(account string, amount uint64)
 }

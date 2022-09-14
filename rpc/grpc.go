@@ -36,8 +36,8 @@ func (r *RPCServer) Transfer(ctx context.Context, req *rpc.TransferRequest) (*rp
 	u.SaveToken(tokenName, t)
 	return &rpc.TransferResponse{
 		Success:     true,
-		ToBalance:   t.BalanceOf(to),
-		FromBalance: t.BalanceOf(from),
+		ToBalance:   t.BalanceOf(to).BigInt().Uint64(),
+		FromBalance: t.BalanceOf(from).BigInt().Uint64(),
 	}, nil
 }
 
@@ -58,7 +58,7 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 	u.SaveToken(tokenName, t)
 	return &rpc.ApproveResponse{
 		Success:   true,
-		Allowance: t.Allowance(owner, spender),
+		Allowance: t.Allowance(owner, spender).BigInt().Uint64(),
 	}, nil
 }
 
@@ -88,8 +88,8 @@ func (r *RPCServer) TransferFrom(ctx context.Context, req *rpc.TransferFromReque
 	u.SaveToken(tokenName, t)
 	return &rpc.TransferFromResponse{
 		Success:     true,
-		ToBalance:   t.BalanceOf(to),
-		FromBalance: t.BalanceOf(from),
+		ToBalance:   t.BalanceOf(to).BigInt().Uint64(),
+		FromBalance: t.BalanceOf(from).BigInt().Uint64(),
 	}, nil
 }
 
@@ -102,7 +102,7 @@ func (r *RPCServer) GetBalance(ctx context.Context, req *rpc.GetBalanceRequest) 
 			Balance: 0,
 		}, err
 	}
-	balance := t.BalanceOf(req.GetAccount())
+	balance := t.BalanceOf(req.GetAccount()).BigInt().Uint64()
 	return &rpc.GetBalanceResponse{
 		Success: true,
 		Balance: balance,
@@ -125,7 +125,7 @@ func (r *RPCServer) GetTokenInfo(ctx context.Context, req *rpc.TokenInfoRequest)
 		TokenName:   t.GetName(),
 		Symbol:      t.GetSymbol(),
 		Decimal:     uint32(t.GetDecimal()),
-		TotalSupply: t.GetTotalSupply(),
+		TotalSupply: t.GetTotalSupply().BigInt().Uint64(),
 	}, nil
 }
 
@@ -140,7 +140,7 @@ func (r *RPCServer) GetAllowance(ctx context.Context, req *rpc.AllowanceRequest)
 	allowance := t.Allowance(req.GetOwner(), req.GetSpender())
 	return &rpc.AllowanceResponse{
 		Success:   true,
-		Allowance: allowance,
+		Allowance: allowance.BigInt().Uint64(),
 	}, nil
 }
 
