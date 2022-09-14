@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/DonggyuLim/erc20/db"
+	"github.com/DonggyuLim/grc20/db"
 )
 
 type GRC20 interface {

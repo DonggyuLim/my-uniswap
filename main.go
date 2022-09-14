@@ -3,9 +3,9 @@ package main
 import (
 	"sync"
 
-	"github.com/DonggyuLim/erc20/db"
-	"github.com/DonggyuLim/erc20/rest"
-	"github.com/DonggyuLim/erc20/rpc"
+	"github.com/DonggyuLim/grc20/db"
+	"github.com/DonggyuLim/grc20/rest"
+	"github.com/DonggyuLim/grc20/rpc"
 )
 
 func main() {

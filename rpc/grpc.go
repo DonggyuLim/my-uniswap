@@ -6,9 +6,9 @@ import (
 	"net"
 	"sync"
 
-	rpc "github.com/DonggyuLim/erc20/protos/RPC"
+	rpc "github.com/DonggyuLim/grc20/protos/RPC"
 
-	u "github.com/DonggyuLim/erc20/utils"
+	u "github.com/DonggyuLim/grc20/utils"
 	"google.golang.org/grpc"
 )
 

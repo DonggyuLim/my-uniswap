@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"errors"
 
-	"github.com/DonggyuLim/erc20/db"
+	"github.com/DonggyuLim/grc20/db"
 )
 
 // byte -> Token

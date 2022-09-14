@@ -1,4 +1,4 @@
-module github.com/DonggyuLim/erc20
+module github.com/DonggyuLim/grc20
 
 go 1.19
 

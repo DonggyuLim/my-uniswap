@@ -5,8 +5,8 @@ import (
 	"encoding/gob"
 	"strconv"
 
-	"github.com/DonggyuLim/erc20/Interface"
-	"github.com/DonggyuLim/erc20/grc20"
+	"github.com/DonggyuLim/grc20/Interface"
+	"github.com/DonggyuLim/grc20/grc20"
 )
 
 // byte -> string

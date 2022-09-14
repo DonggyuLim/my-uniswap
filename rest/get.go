@@ -3,7 +3,7 @@ package rest
 import (
 	"fmt"
 
-	u "github.com/DonggyuLim/erc20/utils"
+	u "github.com/DonggyuLim/grc20/utils"
 	"github.com/gin-gonic/gin"
 )
 
