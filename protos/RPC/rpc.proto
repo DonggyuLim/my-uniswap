@@ -31,9 +31,8 @@ message TransferRequest{
 }
 
 message TransferResponse{
-    bool success = 1;
-    uint64 toBalance = 2;
-    uint64 fromBalance = 3;
+    uint64 toBalance = 1;
+    uint64 fromBalance = 2;
 }
 
 message ApproveRequest{
@@ -44,8 +43,7 @@ message ApproveRequest{
 }
 
 message ApproveResponse{
-    bool success = 1;
-    uint64 allowance = 2;
+    uint64 allowance = 1;
 }
 
 
@@ -57,9 +55,8 @@ message TransferFromRequest{
     uint64 amount = 5;
 }
 message TransferFromResponse{
-    bool success = 1;
-    uint64 toBalance = 2;
-    uint64 fromBalance = 3;
+    uint64 toBalance = 1;
+    uint64 fromBalance = 2;
 }
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
@@ -70,8 +67,7 @@ message GetBalanceRequest{
 }
 
 message GetBalanceResponse{
-    bool success = 1;
-    uint64 balance = 2;
+    uint64 balance = 1;
 }
 
 message TokenInfoRequest{
@@ -79,11 +75,10 @@ message TokenInfoRequest{
 }
 
 message TokenInfoResponse{
-    bool success = 1;
-    string tokenName = 2;
-    string symbol = 3;
-    uint32 decimal = 4;
-    uint64 totalSupply = 5;
+    string tokenName = 1;
+    string symbol = 2;
+    uint32 decimal = 3;
+    uint64 totalSupply = 4;
 }
 
 
@@ -94,6 +89,5 @@ message AllowanceRequest{
 }
 
 message AllowanceResponse{
-    bool success = 1;
-    uint64 allowance = 2;
+    uint64 allowance = 1;
 }

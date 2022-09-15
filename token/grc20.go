@@ -113,6 +113,7 @@ func (t *Token) Burn(address string, amount decimal.Decimal) {
 func (t *Token) burn(address string, amount decimal.Decimal) {
 	currentBalance := t.BalanceOf(address)
 	newBalance := currentBalance.Sub(amount)
+	t.TotalSupply = t.GetTotalSupply().Sub(amount)
 	t.Balance[address] = newBalance
 }
 
