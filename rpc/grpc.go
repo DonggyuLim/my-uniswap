@@ -67,7 +67,7 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 	t, err := u.GetToken(tokenName)
 	if err != nil {
 		return &rpc.ApproveResponse{
-			Success:   false,
+
 			Allowance: 0,
 		}, err
 	}
@@ -75,7 +75,7 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 
 	u.SaveToken(tokenName, t)
 	return &rpc.ApproveResponse{
-		Success:   true,
+
 		Allowance: t.Allowance(owner, spender).BigInt().Uint64(),
 	}, nil
 }
@@ -83,7 +83,7 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 func (r *RPCServer) TransferFrom(ctx context.Context, req *rpc.TransferFromRequest) (*rpc.TransferFromResponse, error) {
 	fmt.Println("TransferFrom!!")
 	tokenName := req.GetTokenName()
-	owner := req.GetOnwer()
+	owner := req.GetOwner()
 	spender := req.GetSpender()
 	to := req.GetTo()
 
@@ -93,16 +93,14 @@ func (r *RPCServer) TransferFrom(ctx context.Context, req *rpc.TransferFromReque
 	if err != nil {
 		return &rpc.TransferFromResponse{
 
-			ToBalance:   0,
-			FromBalance: 0,
+			ToBalance: 0,
 		}, err
 	}
 	err = t.TransferFrom(owner, spender, to, u.UintToDecimal(amount))
 	if err != nil {
 		return &rpc.TransferFromResponse{
 
-			ToBalance:   0,
-			FromBalance: 0,
+			ToBalance: 0,
 		}, err
 	}
 	u.SaveToken(tokenName, t)
