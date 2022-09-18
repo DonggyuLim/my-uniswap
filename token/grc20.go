@@ -1,6 +1,10 @@
 package token
 
-import "github.com/shopspring/decimal"
+import (
+	"sync"
+
+	"github.com/shopspring/decimal"
+)
 
 type Token struct {
 	Name        string
@@ -9,6 +13,7 @@ type Token struct {
 	TotalSupply decimal.Decimal
 	Balance     map[string]decimal.Decimal
 	Allowances  map[string]decimal.Decimal
+	mutex       sync.Mutex
 }
 
 // type address string
@@ -54,6 +59,8 @@ func (t *Token) allowance(owner, spender string) decimal.Decimal {
 // Mutate
 
 func (t *Token) Transfer(from, to string, amount decimal.Decimal) error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	err := t.checkBalance(from, amount)
 	if err != nil {
 		return err
@@ -70,6 +77,8 @@ func (t *Token) transfer(from, to string, amount decimal.Decimal) {
 }
 
 func (t *Token) Approve(owner, spender string, amount decimal.Decimal) error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	if err := t.checkBalance(owner, amount); err != nil {
 		return err
 	}
@@ -81,19 +90,36 @@ func (t *Token) approve(owner, spender string, amount decimal.Decimal) error {
 
 	key := owner + ":" + spender
 	currentBalance := t.Allowances[key]
+
 	t.Allowances[key] = currentBalance.Add(amount)
+	t.Balance[owner] = t.BalanceOf(owner).Sub(amount)
+
 	return nil
 }
 
-func (t *Token) TransferFrom(from, to, spender string, amount decimal.Decimal) error {
-	if err := t.checkspendAllowance(from, spender, amount); err != nil {
+func (t *Token) TransferFrom(owner, spender, to string, amount decimal.Decimal) error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+	//allownace 가 amount 보다 작은지 확인
+	if err := t.checkspendAllowance(owner, spender, amount); err != nil {
 		return err
 	}
-	t.transfer(from, to, amount)
+	t.transferfrom(owner, spender, amount)
 	return nil
+}
+func (t *Token) transferfrom(owner, spender string, amount decimal.Decimal) {
+	key := owner + ":" + spender
+	t.Allowances[key] = t.allowance(owner, spender).Sub(amount)
+	zero := decimal.NewFromInt(0)
+	if t.Allowances[key].Cmp(zero) != 1 {
+		delete(t.Allowances, key)
+	}
+	t.Balance[spender] = t.BalanceOf(spender).Add(amount)
 }
 
 func (t *Token) Mint(account string, amount decimal.Decimal) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.mint(account, amount)
 }
 
@@ -107,14 +133,23 @@ func (t *Token) mint(address string, amount decimal.Decimal) {
 }
 
 func (t *Token) Burn(address string, amount decimal.Decimal) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.burn(address, amount)
 }
 
 func (t *Token) burn(address string, amount decimal.Decimal) {
 	currentBalance := t.BalanceOf(address)
 	newBalance := currentBalance.Sub(amount)
-	t.TotalSupply = t.GetTotalSupply().Sub(amount)
-	t.Balance[address] = newBalance
+	zero := decimal.NewFromInt(0)
+	if newBalance.Cmp(zero) == -1 {
+		t.TotalSupply = t.GetTotalSupply().Sub(amount)
+		t.Balance[address] = zero
+	} else {
+		t.TotalSupply = t.GetTotalSupply().Sub(amount)
+		t.Balance[address] = newBalance
+	}
+
 }
 
 // ///////////////////////////////////

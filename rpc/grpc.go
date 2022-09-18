@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"sync"
@@ -12,14 +13,30 @@ import (
 )
 
 const (
-	RPCPort = "9000"
+	RPCPort = "9001"
 )
 
 type RPCServer struct {
 	rpc.RPCServer
 }
 
+func Grpc(wg *sync.WaitGroup) {
+	lis, err := net.Listen("tcp", ":"+RPCPort)
+	if err != nil {
+		log.Fatalf("Failed to listen %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	rpc.RegisterRPCServer(grpcServer, &RPCServer{})
+
+	log.Printf("start gRPC server on %s port", RPCPort)
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to server:%s", err)
+	}
+	defer wg.Done()
+}
+
 func (r *RPCServer) Transfer(ctx context.Context, req *rpc.TransferRequest) (*rpc.TransferResponse, error) {
+	fmt.Println("Transfer!!!")
 	tokenName := req.TokenName
 	to := req.To
 	from := req.From
@@ -27,7 +44,7 @@ func (r *RPCServer) Transfer(ctx context.Context, req *rpc.TransferRequest) (*rp
 	t, err := u.GetToken(tokenName)
 	if err != nil {
 		return &rpc.TransferResponse{
-			Success:     false,
+
 			ToBalance:   0,
 			FromBalance: 0,
 		}, err
@@ -35,13 +52,14 @@ func (r *RPCServer) Transfer(ctx context.Context, req *rpc.TransferRequest) (*rp
 	t.Transfer(from, to, u.UintToDecimal(amount))
 	u.SaveToken(tokenName, t)
 	return &rpc.TransferResponse{
-		Success:     true,
+
 		ToBalance:   t.BalanceOf(to).BigInt().Uint64(),
 		FromBalance: t.BalanceOf(from).BigInt().Uint64(),
 	}, nil
 }
 
 func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.ApproveResponse, error) {
+	fmt.Println("Approve!!!")
 	tokenName := req.TokenName
 	owner := req.Owner
 	spender := req.Spender
@@ -63,57 +81,59 @@ func (r *RPCServer) Approve(ctx context.Context, req *rpc.ApproveRequest) (*rpc.
 }
 
 func (r *RPCServer) TransferFrom(ctx context.Context, req *rpc.TransferFromRequest) (*rpc.TransferFromResponse, error) {
+	fmt.Println("TransferFrom!!")
 	tokenName := req.GetTokenName()
-	from := req.GetFrom()
-	to := req.GetTo()
+	owner := req.GetOnwer()
 	spender := req.GetSpender()
+	to := req.GetTo()
+
 	amount := req.GetAmount()
 
 	t, err := u.GetToken(tokenName)
 	if err != nil {
 		return &rpc.TransferFromResponse{
-			Success:     false,
+
 			ToBalance:   0,
 			FromBalance: 0,
 		}, err
 	}
-	err = t.TransferFrom(from, to, spender, u.UintToDecimal(amount))
+	err = t.TransferFrom(owner, spender, to, u.UintToDecimal(amount))
 	if err != nil {
 		return &rpc.TransferFromResponse{
-			Success:     false,
+
 			ToBalance:   0,
 			FromBalance: 0,
 		}, err
 	}
 	u.SaveToken(tokenName, t)
 	return &rpc.TransferFromResponse{
-		Success:     true,
-		ToBalance:   t.BalanceOf(to).BigInt().Uint64(),
-		FromBalance: t.BalanceOf(from).BigInt().Uint64(),
+
+		ToBalance: t.BalanceOf(to).BigInt().Uint64(),
 	}, nil
 }
 
 func (r *RPCServer) GetBalance(ctx context.Context, req *rpc.GetBalanceRequest) (*rpc.GetBalanceResponse, error) {
-
+	fmt.Println("GetBalance!!")
 	t, err := u.GetToken(req.GetTokenName())
 	if err != nil {
 		return &rpc.GetBalanceResponse{
-			Success: false,
+
 			Balance: 0,
 		}, err
 	}
 	balance := t.BalanceOf(req.GetAccount()).BigInt().Uint64()
 	return &rpc.GetBalanceResponse{
-		Success: true,
+
 		Balance: balance,
 	}, nil
 }
 
 func (r *RPCServer) GetTokenInfo(ctx context.Context, req *rpc.TokenInfoRequest) (*rpc.TokenInfoResponse, error) {
+	fmt.Println("GetTokenInfo!!")
 	t, err := u.GetToken(req.GetTokenName())
 	if err != nil {
 		return &rpc.TokenInfoResponse{
-			Success:     false,
+
 			TokenName:   "",
 			Symbol:      "",
 			Decimal:     0,
@@ -121,7 +141,7 @@ func (r *RPCServer) GetTokenInfo(ctx context.Context, req *rpc.TokenInfoRequest)
 		}, err
 	}
 	return &rpc.TokenInfoResponse{
-		Success:     true,
+
 		TokenName:   t.GetName(),
 		Symbol:      t.GetSymbol(),
 		Decimal:     uint32(t.GetDecimal()),
@@ -130,31 +150,17 @@ func (r *RPCServer) GetTokenInfo(ctx context.Context, req *rpc.TokenInfoRequest)
 }
 
 func (r *RPCServer) GetAllowance(ctx context.Context, req *rpc.AllowanceRequest) (*rpc.AllowanceResponse, error) {
+	fmt.Println("GetAllowance!!!")
 	t, err := u.GetToken(req.GetTokenName())
 	if err != nil {
 		return &rpc.AllowanceResponse{
-			Success:   false,
+
 			Allowance: 0,
 		}, err
 	}
 	allowance := t.Allowance(req.GetOwner(), req.GetSpender())
 	return &rpc.AllowanceResponse{
-		Success:   true,
+
 		Allowance: allowance.BigInt().Uint64(),
 	}, nil
-}
-
-func Grpc(wg *sync.WaitGroup) {
-	lis, err := net.Listen("tcp", ":"+RPCPort)
-	if err != nil {
-		log.Fatalf("Failed to listen %v", err)
-	}
-	grpcServer := grpc.NewServer()
-	rpc.RegisterRPCServer(grpcServer, &RPCServer{})
-
-	log.Printf("start gRPC server on %s port", RPCPort)
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to server:%s", err)
-	}
-	defer wg.Done()
 }

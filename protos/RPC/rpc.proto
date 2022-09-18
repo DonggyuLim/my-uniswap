@@ -49,14 +49,13 @@ message ApproveResponse{
 
 message TransferFromRequest{
     string tokenName = 1;
-    string from = 2;
-    string to = 3;
-    string spender = 4;
+    string owner = 2;
+    string spender = 3;
+    string to = 4;
     uint64 amount = 5;
 }
 message TransferFromResponse{
     uint64 toBalance = 1;
-    uint64 fromBalance = 2;
 }
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////

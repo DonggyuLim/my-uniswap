@@ -11,8 +11,8 @@ import (
 // byte -> Token
 func ByteToToken(data []byte) *Token {
 	var token *Token
-	encoder := gob.NewDecoder(bytes.NewBuffer(data))
-	err := encoder.Decode(&token)
+	decoder := gob.NewDecoder(bytes.NewBuffer(data))
+	err := decoder.Decode(&token)
 	if err != nil {
 		panic(err)
 	}

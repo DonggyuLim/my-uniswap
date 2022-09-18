@@ -8,7 +8,15 @@ import (
 	"github.com/DonggyuLim/grc20/token"
 	u "github.com/DonggyuLim/grc20/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 )
+
+type AccountResponse struct {
+	TokenName string          `json:"tokenName"`
+	Account   string          `json:"account"`
+	Balance   decimal.Decimal `json:"balance"`
+	Allowance decimal.Decimal `json:"Allowance"`
+}
 
 type deployRequest struct {
 	TokenName   string `json:"tokenName"`
@@ -72,8 +80,13 @@ func Mint(c *gin.Context) {
 	t.Mint(r.Account, u.UintToDecimal(r.Amount))
 	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
-		"message":      "success",
-		"totalBalance": t.GetTotalSupply(),
+		"message":     "success",
+		"totalSupply": t.GetTotalSupply(),
+		"account": AccountResponse{
+			TokenName: t.GetName(),
+			Account:   r.Account,
+			Balance:   t.BalanceOf(r.Account),
+		},
 	})
 }
 
@@ -104,7 +117,16 @@ func Transfer(c *gin.Context) {
 	}
 	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
-		"account": r.From,
+		"from": AccountResponse{
+			TokenName: t.GetName(),
+			Account:   r.From,
+			Balance:   t.BalanceOf(r.From),
+		},
+		"to": AccountResponse{
+			TokenName: t.GetName(),
+			Account:   r.To,
+			Balance:   t.BalanceOf(r.To),
+		},
 		"balance": t.BalanceOf(r.From),
 	})
 }
@@ -136,17 +158,18 @@ func Approve(c *gin.Context) {
 	}
 	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
-		"message":         success,
-		"allowanceAmount": t.Allowance(r.Owner, r.Spender),
+		"message": success,
+		"account": t.Allowance(r.Owner, r.Spender),
 	})
 }
 
 type transferFromRequest struct {
 	TokenName string `json:"tokenName"`
-	From      string `json:"from"`
-	To        string `json:"to"`
-	Spender   string `json:"spender"`
-	Amount    uint64 `json:"amount"`
+	Onwer     string `json:"owner"`
+
+	Spender string `json:"spender"`
+	To      string `json:"to"`
+	Amount  uint64 `json:"amount"`
 }
 
 func TransferFrom(c *gin.Context) {
@@ -161,15 +184,54 @@ func TransferFrom(c *gin.Context) {
 		c.String(400, err.Error())
 		return
 	}
-	err = t.TransferFrom(r.From, r.To, r.Spender, u.UintToDecimal(r.Amount))
+	err = t.TransferFrom(r.Onwer, r.Spender, r.To, u.UintToDecimal(r.Amount))
 	if err != nil {
 		c.String(400, err.Error())
 		return
 	}
 	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
+		"message": success,
+		"from": AccountResponse{
+			TokenName: t.GetName(),
+			Account:   r.From,
+			Balance:   t.BalanceOf(r.From),
+		},
+		"to": AccountResponse{
+			TokenName: t.GetName(),
+			Account:   r.To,
+			Balance:   t.BalanceOf(r.To),
+		},
+	})
+}
+
+type burnRequest struct {
+	TokenName string          `json:"tokenName"`
+	Account   string          `json:"account"`
+	Amount    decimal.Decimal `json:"amount"`
+}
+
+func Burn(c *gin.Context) {
+	r := burnRequest{}
+	err := c.ShouldBindJSON(&r)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+
+	t, err := u.GetToken(r.TokenName)
+	if err != nil {
+		c.String(400, err.Error())
+		return
+	}
+	t.Burn(r.Account, r.Amount)
+	u.SaveToken(r.TokenName, t)
+	c.JSON(200, gin.H{
 		"message":     success,
-		"toBalance":   t.BalanceOf(r.To),
-		"fromBalance": t.BalanceOf(r.From),
+		"totalSupply": t.GetTotalSupply(),
+		"account": AccountResponse{
+			Account: r.Account,
+			Balance: t.BalanceOf(r.Account),
+		},
 	})
 }

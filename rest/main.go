@@ -20,6 +20,7 @@ func Rest(wg *sync.WaitGroup) {
 	r.POST("/transfer", Transfer)
 	r.POST("/transferFrom", TransferFrom)
 	r.POST("/approve", Approve)
-	r.Run()
+	r.POST("/burn", Burn)
+	r.Run(":8000")
 	defer wg.Done()
 }
