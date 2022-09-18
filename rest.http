@@ -1,5 +1,6 @@
 http://localhost:8000
 
+///USDT
 
 ###
 
@@ -112,9 +113,9 @@ Content-Type: "application/json"
 
 {
     "tokenName":"USDT",
-    "from":"0xa",
     "to":"0xc",
     "spender":"0xb",
+    "owner":"0xa",
     "amount":10
 }
 
@@ -136,5 +137,5 @@ Content-Type: "application/json"
 {
     "tokenName":"USDT",
     "account":"0xb",
-    "amount":1000
+    "amount":100
 }

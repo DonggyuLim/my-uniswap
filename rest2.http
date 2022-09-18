@@ -23,7 +23,7 @@ Content-Type: "application/json"
 {
     "tokenName":"WETH",
     "account":"0xb",
-    "amount":100
+    "amount":1000
 }
 ### 
 POST http://localhost:8000/mint HTTP/1.1
@@ -32,7 +32,7 @@ Content-Type: "application/json"
 {
     "tokenName":"WETH",
     "account":"0xa",
-    "amount":100
+    "amount":1000
 }
 //////////////////////////////////////////////////////////////
 //balance query
@@ -58,6 +58,24 @@ Content-Type: "application/json"
 //transfer from -> to
 ###
 
+###
+GET http://localhost:8000/balance HTTP/1.1
+Content-Type: "application/json"
+
+{
+    "tokenName":"WETH",
+    "account":"0xc"
+}
+
+###
+GET http://localhost:8000/balance HTTP/1.1
+Content-Type: "application/json"
+
+{
+    "tokenName":"WETH",
+    "account":"WETH:USDT"
+}
+###
 POST http://localhost:8000/transfer HTTP/1.1
 Content-Type: "application/json"
 
@@ -112,9 +130,9 @@ Content-Type: "application/json"
 
 {
     "tokenName":"WETH",
-    "from":"0xa",
-    "to":"0xc",
+    "owner":"0xa",
     "spender":"0xb",
+    "to":"0xc",
     "amount":10
 }
 

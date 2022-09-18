@@ -192,11 +192,7 @@ func TransferFrom(c *gin.Context) {
 	u.SaveToken(r.TokenName, t)
 	c.JSON(200, gin.H{
 		"message": success,
-		"from": AccountResponse{
-			TokenName: t.GetName(),
-			Account:   r.From,
-			Balance:   t.BalanceOf(r.From),
-		},
+
 		"to": AccountResponse{
 			TokenName: t.GetName(),
 			Account:   r.To,
