@@ -44,7 +44,6 @@ func (r *RPCServer) Transfer(ctx context.Context, req *rpc.TransferRequest) (*rp
 	t, err := u.GetToken(tokenName)
 	if err != nil {
 		return &rpc.TransferResponse{
-
 			ToBalance:   0,
 			FromBalance: 0,
 		}, err

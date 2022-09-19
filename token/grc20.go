@@ -16,15 +16,6 @@ type Token struct {
 	mutex       sync.Mutex
 }
 
-// type address string
-
-// func StringToAddress(data string) address {
-// 	return address(data)
-// }
-
-// /////////////////
-// ////////////////
-// ////////////////
 // Query
 func (t *Token) GetName() string {
 	return t.Name
@@ -107,6 +98,7 @@ func (t *Token) TransferFrom(owner, spender, to string, amount decimal.Decimal) 
 	t.transferfrom(owner, spender, amount)
 	return nil
 }
+
 func (t *Token) transferfrom(owner, spender string, amount decimal.Decimal) {
 	key := owner + ":" + spender
 	t.Allowances[key] = t.allowance(owner, spender).Sub(amount)
@@ -149,7 +141,6 @@ func (t *Token) burn(address string, amount decimal.Decimal) {
 		t.TotalSupply = t.GetTotalSupply().Sub(amount)
 		t.Balance[address] = newBalance
 	}
-
 }
 
 // ///////////////////////////////////

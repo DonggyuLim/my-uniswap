@@ -46,6 +46,7 @@ Content-Type: "application/json"
     "account":"0xb"
 }
 
+
 ###
 GET http://localhost:8000/balance HTTP/1.1
 Content-Type: "application/json"
@@ -73,7 +74,7 @@ Content-Type: "application/json"
 
 {
     "tokenName":"WETH",
-    "account":"WETH:USDT"
+    "account":"USDT:WETH"
 }
 ###
 POST http://localhost:8000/transfer HTTP/1.1
@@ -131,9 +132,9 @@ Content-Type: "application/json"
 {
     "tokenName":"WETH",
     "owner":"0xa",
-    "spender":"0xb",
-    "to":"0xc",
-    "amount":10
+    "spender":"USDT:WETH",
+    "to":"USDT:WETH",
+    "amount":1000
 }
 
 ###

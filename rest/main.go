@@ -18,7 +18,7 @@ func Rest(wg *sync.WaitGroup) {
 	r.POST("/deploy", Deploy)
 	r.POST("/mint", Mint)
 	r.POST("/transfer", Transfer)
-	r.POST("/transferFrom", TransferFrom)
+	r.POST("/transferfrom", TransferFrom)
 	r.POST("/approve", Approve)
 	r.POST("/burn", Burn)
 	r.Run(":8000")
