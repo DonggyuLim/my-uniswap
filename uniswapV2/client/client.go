@@ -7,12 +7,14 @@ import (
 	"time"
 
 	pb "github.com/DonggyuLim/grc20/protos/RPC"
-	u "github.com/DonggyuLim/uniswap/utils"
 	"github.com/shopspring/decimal"
 	"google.golang.org/grpc"
 )
 
-const serviceHost = "localhost:9001"
+const (
+	serviceHost = "localhost:9001"
+	zero        = "0"
+)
 
 var (
 	once sync.Once
@@ -59,10 +61,10 @@ func (c *client) GetBalance(tokenName, account string) (decimal.Decimal, error) 
 		Account:   account,
 	})
 	if err != nil {
-		return decimal.NewFromInt(0), err
+		return decimal.Zero, err
 	}
 	balance := decimal.RequireFromString(res.GetBalance())
-	return u.NewDecimalFromUint(res.GetBalance()), nil
+	return balance, nil
 }
 
 func (c *client) TokenInfo(tokenName string) (*pb.TokenInfoResponse, error) {
@@ -86,12 +88,13 @@ func (c *client) Allowance(tokenName, owner, spender string) (decimal.Decimal, e
 		Spender:   spender,
 	})
 	if err != nil {
-		return u.NewDecimalFromUint(0), err
+		return decimal.Zero, err
 	}
-	return u.NewDecimalFromUint(res.GetAllowance()), nil
+	allowance := decimal.RequireFromString(res.GetAllowance())
+	return allowance, nil
 }
 
-func (c *client) Approve(tokenName, owner, spender string, amount uint64) (*pb.ApproveResponse, error) {
+func (c *client) Approve(tokenName, owner, spender string, amount string) (*pb.ApproveResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	res, err := c.client.Approve(ctx, &pb.ApproveRequest{
@@ -106,7 +109,7 @@ func (c *client) Approve(tokenName, owner, spender string, amount uint64) (*pb.A
 	return res, nil
 }
 
-func (c *client) TransferFrom(tokenName, owner, spender, to string, amount uint64) (*pb.TransferFromResponse, error) {
+func (c *client) TransferFrom(tokenName, owner, spender, to string, amount string) (*pb.TransferFromResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	res, err := c.client.TransferFrom(ctx, &pb.TransferFromRequest{
@@ -122,7 +125,7 @@ func (c *client) TransferFrom(tokenName, owner, spender, to string, amount uint6
 	return res, nil
 }
 
-func (c *client) Transfer(tokenName, from, to string, amount uint64) (*pb.TransferResponse, error) {
+func (c *client) Transfer(tokenName, from, to string, amount string) (*pb.TransferResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	res, err := c.client.Transfer(ctx, &pb.TransferRequest{

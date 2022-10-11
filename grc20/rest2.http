@@ -9,7 +9,7 @@ Content-Type: "application/json"
 {
     "tokenName":"WETH",
     "symbol":"WETH",
-    "totalSupply":100,
+    "totalSupply":"100",
     "decimal":10,
     "account":"0xb"
 }
@@ -23,7 +23,7 @@ Content-Type: "application/json"
 {
     "tokenName":"WETH",
     "account":"0xb",
-    "amount":1000
+    "amount":"10000000000000"
 }
 ### 
 POST http://localhost:8000/mint HTTP/1.1
@@ -32,7 +32,7 @@ Content-Type: "application/json"
 {
     "tokenName":"WETH",
     "account":"0xa",
-    "amount":1000
+    "amount":"10000000000000"
 }
 //////////////////////////////////////////////////////////////
 //balance query
@@ -84,7 +84,7 @@ Content-Type: "application/json"
     "tokenName":"WETH",
     "from":"0xb",
     "to":"0xa",
-    "amount":10
+    "amount":"100000"
 }
 /////////////////////////////////////////////////////////////////////
 ###
@@ -118,7 +118,7 @@ Content-Type: "application/json"
     "tokenName":"WETH",
     "owner":"0xa",
     "spender":"0xb",
-    "amount":10
+    "amount":"500000"
 }
 
 
@@ -126,15 +126,15 @@ Content-Type: "application/json"
 //TransferFrom
 ###
 
-POST http://localhost:8000/transferFrom HTTP/1.1
+POST http://localhost:8000/transferfrom HTTP/1.1
 Content-Type: "application/json"
 
 {
     "tokenName":"WETH",
-    "owner":"0xa",
+    "owner":"0xb",
     "spender":"USDT:WETH",
     "to":"USDT:WETH",
-    "amount":1000
+    "amount":"500"
 }
 
 ###

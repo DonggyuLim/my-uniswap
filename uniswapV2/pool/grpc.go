@@ -4,14 +4,13 @@ import (
 	"fmt"
 
 	"github.com/DonggyuLim/uniswap/client"
-	u "github.com/DonggyuLim/uniswap/utils"
 	"github.com/shopspring/decimal"
 )
 
 func sendApprove(tokenName, owner, spender string, amount decimal.Decimal) error {
 	//p.name 으로로??
 	fmt.Println("Approve!")
-	_, err := client.GetClient().Approve(tokenName, owner, spender, u.DecimalToUint64(amount))
+	_, err := client.GetClient().Approve(tokenName, owner, spender, amount.String())
 	if err != nil {
 		return err
 	}
@@ -29,7 +28,7 @@ func getAllowance(tokenName, account, poolName string) (decimal.Decimal, error) 
 
 func sendTransferFrom(tokenName, owner, spender, to string, amount decimal.Decimal) error {
 	fmt.Println("TransferFrom!")
-	_, err := client.GetClient().TransferFrom(tokenName, owner, spender, to, u.DecimalToUint64(amount))
+	_, err := client.GetClient().TransferFrom(tokenName, owner, spender, to, amount.String())
 	if err != nil {
 		return err
 	}
@@ -38,7 +37,7 @@ func sendTransferFrom(tokenName, owner, spender, to string, amount decimal.Decim
 
 func sendTransfer(tokenName, from, to string, amount decimal.Decimal) error {
 	fmt.Println("Transfer!")
-	_, err := client.GetClient().Transfer(tokenName, from, to, u.DecimalToUint64(amount))
+	_, err := client.GetClient().Transfer(tokenName, from, to, amount.String())
 	if err != nil {
 		return err
 	}

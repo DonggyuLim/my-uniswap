@@ -67,13 +67,13 @@ func createPair(c *gin.Context) {
 		return
 	}
 
-	res, err := client.GetClient().Approve(r.XToken.GetTokenName(), r.XToken.Account, "0xuni", utils.DecimalToUint64(r.XToken.GetBalance()))
+	res, err := client.GetClient().Approve(r.XToken.GetTokenName(), r.XToken.Account, "0xuni", r.XToken.GetBalance().String())
 	if err != nil {
 		c.String(400, err.Error())
 		return
 	}
 	fmt.Println(res)
-	res, err = client.GetClient().Approve(r.YToken.GetTokenName(), r.YToken.Account, "0xuni", utils.DecimalToUint64(r.YToken.GetBalance()))
+	res, err = client.GetClient().Approve(r.YToken.GetTokenName(), r.YToken.Account, "0xuni", r.YToken.GetBalance().String())
 	if err != nil {
 		c.String(400, err.Error())
 		return
