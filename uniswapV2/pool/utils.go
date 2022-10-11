@@ -32,11 +32,3 @@ func grc20CheckBalance(tokenName, address string, amount decimal.Decimal) error 
 	}
 	return nil
 }
-
-// Pool 의 메서드로 변경하기!
-func (p *Pool) lpCheckBalance(balance, amount decimal.Decimal) error {
-	if balance.Cmp(amount) == -1 {
-		return errors.New("you have not enough lp")
-	}
-	return nil
-}

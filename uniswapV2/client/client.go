@@ -61,6 +61,7 @@ func (c *client) GetBalance(tokenName, account string) (decimal.Decimal, error) 
 	if err != nil {
 		return decimal.NewFromInt(0), err
 	}
+	balance := decimal.RequireFromString(res.GetBalance())
 	return u.NewDecimalFromUint(res.GetBalance()), nil
 }
 

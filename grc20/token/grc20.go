@@ -13,7 +13,7 @@ type Token struct {
 	TotalSupply decimal.Decimal
 	Balance     map[string]decimal.Decimal
 	Allowances  map[string]decimal.Decimal
-	mutex       sync.Mutex
+	mutex       sync.RWMutex
 }
 
 // Query

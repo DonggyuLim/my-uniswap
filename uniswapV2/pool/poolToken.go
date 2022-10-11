@@ -2,6 +2,7 @@ package pool
 
 import (
 	"errors"
+	"sync"
 
 	u "github.com/DonggyuLim/uniswap/utils"
 	"github.com/shopspring/decimal"
@@ -14,6 +15,7 @@ type poolToken struct {
 	TotalSupply decimal.Decimal
 	Balance     map[string]decimal.Decimal
 	Allowances  map[string]decimal.Decimal
+	mutex       sync.RWMutex
 }
 
 func NewPoolToken(name, symbol string, dec uint8) poolToken {
@@ -80,6 +82,8 @@ func (t *poolToken) allowance(owner, spender string) decimal.Decimal {
 // Mutate
 
 func (t *poolToken) Transfer(from, to string, amount decimal.Decimal) error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	err := t.checkBalance(from, amount)
 	if err != nil {
 		return err
@@ -97,6 +101,8 @@ func (t *poolToken) transfer(from, to string, amount decimal.Decimal) {
 }
 
 func (t *poolToken) Approve(owner, spender string, amount decimal.Decimal) error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	if err := t.checkBalance(owner, amount); err != nil {
 		return err
 	}
@@ -115,6 +121,8 @@ func (t *poolToken) approve(owner, spender string, amount decimal.Decimal) error
 }
 
 func (t *poolToken) TransferFrom(owner, spender, to string, amount decimal.Decimal) error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	if err := t.checkspendAllowance(owner, spender, amount); err != nil {
 		return err
 	}
@@ -133,7 +141,8 @@ func (t *poolToken) transferfrom(owner, spender, to string, amount decimal.Decim
 }
 
 func (t *poolToken) Mint(account string, amount decimal.Decimal) {
-
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.mint(account, amount)
 }
 
@@ -144,6 +153,8 @@ func (t *poolToken) mint(address string, amount decimal.Decimal) {
 }
 
 func (t *poolToken) Burn(address string, amount decimal.Decimal) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.burn(address, amount)
 }
 

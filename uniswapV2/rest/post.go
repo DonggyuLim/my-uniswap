@@ -14,9 +14,9 @@ import (
 )
 
 type AccountResponse struct {
-	TokenName string          `json:"tokenName"`
-	Account   string          `json:"account"`
-	Amount    decimal.Decimal `json:"amount"`
+	TokenName string `json:"tokenName"`
+	Account   string `json:"account"`
+	Amount    string `json:"amount"`
 }
 
 type createPairRequest struct {
@@ -159,17 +159,17 @@ func withdraw(c *gin.Context) {
 		"Account": AccountResponse{
 			TokenName: p.Pool.GetLPname(),
 			Account:   r.Account,
-			Amount:    p.Pool.LP.BalanceOf(r.Account),
+			Amount:    p.Pool.LP.BalanceOf(r.Account).String(),
 		},
 	})
 
 }
 
 type swapRequest struct {
-	PairName  string          `json:"pairName"`
-	TokenName string          `json:"tokenName"`
-	Account   string          `json:"account"`
-	Amount    decimal.Decimal `json:"amount"`
+	PairName  string `json:"pairName"`
+	TokenName string `json:"tokenName"`
+	Account   string `json:"account"`
+	Amount    string `json:"amount"`
 }
 
 func swap(c *gin.Context) {
@@ -183,7 +183,11 @@ func swap(c *gin.Context) {
 	if err != nil {
 		c.String(400, "Pair name isn't exsits")
 	}
-	err = p.Pool.Swap(r.TokenName, r.Account, r.Amount)
+	amount, err := decimal.NewFromString(r.Amount)
+	if err != nil {
+		c.String(400, err.Error())
+	}
+	err = p.Pool.Swap(r.TokenName, r.Account, amount)
 	if err != nil {
 		c.String(400, err.Error())
 	}
@@ -194,7 +198,7 @@ func swap(c *gin.Context) {
 	} else {
 		tokenName = p.Pool.GetXName()
 	}
-	amount, err := client.GetClient().GetBalance(tokenName, r.Account)
+	amount, err = client.GetClient().GetBalance(tokenName, r.Account)
 	if err != nil {
 		c.String(400, err.Error())
 	}
@@ -202,7 +206,7 @@ func swap(c *gin.Context) {
 		"account": AccountResponse{
 			TokenName: tokenName,
 			Account:   r.Account,
-			Amount:    amount,
+			Amount:    amount.String(),
 		},
 	})
 }

@@ -1,7 +1,6 @@
 package pool
 
 import (
-	"errors"
 	"fmt"
 
 	u "github.com/DonggyuLim/uniswap/utils"
@@ -33,7 +32,7 @@ import (
 // 더 작은 쪽으로 LP 토큰 제공.
 func (p *Pool) mintLP(account string, dx, dy decimal.Decimal) {
 
-	one := decimal.NewFromInt(0)
+	one := decimal.Zero
 	if p.LP.GetTotalSupply().Cmp(one) != 1 {
 
 		LP := u.Sqrt(dx.Mul(dy))
@@ -48,7 +47,6 @@ func (p *Pool) mintLP(account string, dx, dy decimal.Decimal) {
 			p.LP.Mint(account, caseY)
 		}
 	}
-
 }
 
 func (p *Pool) Deposit(account string, tokenX, tokenY Token) error {
@@ -86,11 +84,11 @@ func (p *Pool) Deposit(account string, tokenX, tokenY Token) error {
 
 		//grpc에 approve 호출해야함.
 
-		err := p.desposit(tokenX.GetTokenName(), account, dx)
+		err := p.grpcDesposit(tokenX.GetTokenName(), account, dx)
 		if err != nil {
 			return err
 		}
-		err = p.desposit(tokenY.GetTokenName(), account, dy)
+		err = p.grpcDesposit(tokenY.GetTokenName(), account, dy)
 		// err = sendApprove(tokenY.GetTokenName(), account, p.GetName(), dy)
 		if err != nil {
 			return err
@@ -104,51 +102,39 @@ func (p *Pool) Deposit(account string, tokenX, tokenY Token) error {
 	case 1:
 
 		// pp 가 1이상이면 나눠줘야하고 1미만이면 곱해줘야 비율이 맞춰짐.
-		var tempY decimal.Decimal
-		one := decimal.NewFromInt(1)
-		if pp.Cmp(one) == 1 && dp.Cmp(one) == -1 {
-			tempY = dx.Mul(pp)
-		} else {
-			tempY = dx.Div(pp)
-		}
-		//만약 dy - tempY 가 음수라면 패닉일으켜야해.
-		//왜냐하면 필요한 Y 가 더 크다는 뜻이니까.
-		if dy.Sub(tempY).Cmp(one) == -1 {
-			err = errors.New("send more token b")
-			return err
-		}
+		y := dx.Div(pp)
 
 		//grpc에 approve 호출해야함.
-		err = p.desposit(tokenX.GetTokenName(), account, dx)
+		err = p.grpcDesposit(tokenX.GetTokenName(), account, dx)
 
 		if err != nil {
 			return err
 		}
 
-		err = p.desposit(tokenX.GetTokenName(), account, tempY)
+		err = p.grpcDesposit(tokenX.GetTokenName(), account, y)
 		if err != nil {
 			return err
 		}
-		p.mintLP(account, dx, tempY)
+		p.mintLP(account, dx, y)
 		p.X.Balance = rx.Add(dx)
-		p.Y.Balance = ry.Add(tempY)
+		p.Y.Balance = ry.Add(y)
 	case -1:
 
 		//pp < dp
 
-		tempX := dy.Mul(pp)
+		x := dy.Mul(pp)
 
-		err = p.desposit(tokenX.GetTokenName(), account, tempX)
+		err = p.grpcDesposit(tokenX.GetTokenName(), account, x)
 		if err != nil {
 			return err
 		}
-		err = p.desposit(tokenX.GetTokenName(), account, dy)
+		err = p.grpcDesposit(tokenX.GetTokenName(), account, dy)
 
 		if err != nil {
 			return err
 		}
-		p.mintLP(account, tempX, dy)
-		p.X.Balance = rx.Add(tempX)
+		p.mintLP(account, x, dy)
+		p.X.Balance = rx.Add(x)
 		p.Y.Balance = ry.Add(dy)
 
 	}
@@ -159,7 +145,7 @@ func (p *Pool) Deposit(account string, tokenX, tokenY Token) error {
 // allowance 로 확인한 뒤에 후 처리를 할 것이다.
 // 그런데 현재 내 프로그램에선 계정에서 approve 쏴주기가 불편하므로
 // 이 함수안에서 다 처리하는 로직으로 만듬.
-func (p *Pool) desposit(tokenName, account string, amount decimal.Decimal) error {
+func (p *Pool) grpcDesposit(tokenName, account string, amount decimal.Decimal) error {
 	err := sendApprove(tokenName, account, p.GetName(), amount)
 	if err != nil {
 		return err
@@ -249,7 +235,7 @@ func (p *Pool) Swap(tokenName, account string, amount decimal.Decimal) error {
 		fee := sendY.Mul(u.GetBalanceFromPercent(sendY, p.FeeRate))
 		fmt.Println("fee=======", fee)
 		sendY = sendY.Sub(fee)
-		err := p.swap(xName, yName, account, amount, sendY)
+		err := p.grpcSwap(xName, yName, account, amount, sendY)
 		if err != nil {
 			return err
 		}
@@ -271,7 +257,7 @@ func (p *Pool) Swap(tokenName, account string, amount decimal.Decimal) error {
 
 		fee := sendX.Mul(u.GetBalanceFromPercent(sendX, p.FeeRate))
 		sendX = sendX.Sub(fee)
-		err := p.swap(yName, xName, account, amount, sendX)
+		err := p.grpcSwap(yName, xName, account, amount, sendX)
 		if err != nil {
 			return err
 		}
@@ -286,7 +272,7 @@ func (p *Pool) Swap(tokenName, account string, amount decimal.Decimal) error {
 // wantToken = 원하는 토큰
 // sendAmount = 이용자가 보낸 토큰 양
 // reciveAmount = 이용자가 받아야할 양
-func (p *Pool) swap(sendTokenName, wantTokenName, account string, sendAmount, reciveAmount decimal.Decimal) error {
+func (p *Pool) grpcSwap(sendTokenName, wantTokenName, account string, sendAmount, reciveAmount decimal.Decimal) error {
 	err := sendApprove(sendTokenName, account, p.GetName(), sendAmount)
 	if err != nil {
 		return err

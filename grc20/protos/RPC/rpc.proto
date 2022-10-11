@@ -27,23 +27,23 @@ message TransferRequest{
    string tokenName =1;
    string to  = 2;
    string from = 3;
-   uint64 amount = 4;
+   string amount = 4;
 }
 
 message TransferResponse{
-    uint64 toBalance = 1;
-    uint64 fromBalance = 2;
+    string toBalance = 1;
+    string fromBalance = 2;
 }
 
 message ApproveRequest{
     string tokenName = 1;
     string owner = 2;
     string spender = 3;
-    uint64 amount = 4;
+    string amount = 4;
 }
 
 message ApproveResponse{
-    uint64 allowance = 1;
+    string allowance = 1;
 }
 
 
@@ -52,10 +52,10 @@ message TransferFromRequest{
     string owner = 2;
     string spender = 3;
     string to = 4;
-    uint64 amount = 5;
+    string amount = 5;
 }
 message TransferFromResponse{
-    uint64 toBalance = 1;
+    string toBalance = 1;
 }
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
@@ -66,7 +66,7 @@ message GetBalanceRequest{
 }
 
 message GetBalanceResponse{
-    uint64 balance = 1;
+    string balance = 1;
 }
 
 message TokenInfoRequest{
@@ -77,7 +77,7 @@ message TokenInfoResponse{
     string tokenName = 1;
     string symbol = 2;
     uint32 decimal = 3;
-    uint64 totalSupply = 4;
+    string totalSupply = 4;
 }
 
 
@@ -88,5 +88,5 @@ message AllowanceRequest{
 }
 
 message AllowanceResponse{
-    uint64 allowance = 1;
+    string allowance = 1;
 }
